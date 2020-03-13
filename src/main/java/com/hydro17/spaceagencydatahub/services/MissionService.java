@@ -22,7 +22,7 @@ public class MissionService {
 
     public Mission getMissionById(long id) {
         Optional<Mission> mission =  _missionRepository.findById(id);
-        return mission.get();
+        return mission.orElse(null);
     }
 
     public boolean isMissionNameUnique(String missionName) {

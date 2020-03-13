@@ -36,11 +36,9 @@ public class MissionController {
     @GetMapping("/{id}")
     public Mission getMissionById(@PathVariable long id) {
 
-        Mission mission;
+        Mission mission = _missionService.getMissionById(id);
 
-        try {
-            mission = _missionService.getMissionById(id);
-        } catch (NoSuchElementException ex) {
+        if (mission == null) {
             throw new MissionNotFoundException("There is no mission with id: " + id);
         }
 
