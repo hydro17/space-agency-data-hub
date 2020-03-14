@@ -31,8 +31,8 @@ public class MissionService {
     }
 
     public Mission saveMission(Mission mission) {
-        _missionRepository.save(mission);
-        return mission;
+        Mission missionWithSetId = _missionRepository.save(mission);
+        return missionWithSetId;
     }
 
     public Mission updateMission(Mission missionChanged) {
@@ -45,9 +45,7 @@ public class MissionService {
         return mission;
     }
 
-    public Mission deleteMissionById(long id) {
-        Mission mission = _missionRepository.findById(id).get();
+    public void deleteMissionById(long id) {
         _missionRepository.deleteById(id);
-        return mission;
     }
 }

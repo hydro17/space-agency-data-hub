@@ -19,7 +19,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/missions")
+@RequestMapping("/api/missions")
 public class MissionController {
 
     private MissionService _missionService;
@@ -36,7 +36,6 @@ public class MissionController {
 
     @GetMapping("/{id}")
     public Mission getMissionById(@PathVariable long id) {
-
         Mission mission = _missionService.getMissionById(id);
 
         if (mission == null) {
@@ -50,12 +49,12 @@ public class MissionController {
     public Mission saveMission(@Valid @RequestBody Mission mission, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
-            throw new MissionNullFieldException("One of the Mission object fields is null");
+            throw new MissionNullFieldException("One of the fields of the Mission object is null");
         }
 
         if (_missionService.isMissionNameUnique(mission.getName()) == false) {
             throw new MissionNameNotUniqueException("There is already a mission with the name: " + mission.getName());
-        };
+        }
 
         Mission missionWithIdSet = _missionService.saveMission(mission);
 
@@ -63,13 +62,28 @@ public class MissionController {
     }
 
     @PutMapping
-    public Mission updateMission(@RequestBody Mission mission) {
+    public Mission updateMission(@Valid @RequestBody Mission mission, BindingResult bindingResult) {
+
+        if (_missionService.getMissionById(mission.getId()) == null) {
+            throw new MissionNotFoundException("There is no mission with id: " + mission.getId());
+        }
+
+        if (bindingResult.hasErrors()) {
+            throw new MissionNullFieldException("One of the fields of the Mission object is null");
+        }
+
         return _missionService.updateMission(mission);
     }
 
     @DeleteMapping("/{id}")
-    public Mission deleteMissionById(@PathVariable long id) {
-        return _missionService.deleteMissionById(id);
+    public void deleteMissionById(@PathVariable long id) {
+        Mission mission = _missionService.getMissionById(id);
+
+        if (mission == null) {
+            throw new MissionNotFoundException("There is no mission with id: " + id);
+        }
+
+        _missionService.deleteMissionById(id);
     }
 
     @ExceptionHandler
