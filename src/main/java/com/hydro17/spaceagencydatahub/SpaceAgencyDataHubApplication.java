@@ -23,12 +23,14 @@ public class SpaceAgencyDataHubApplication {
             Mission mission = new Mission();
             mission.setName("mission100");
             mission.setImageryType(ImageryType.HYPERSPECTRAL);
-            mission.setFinishDate(LocalDateTime.now());
+            mission.setStartDate(LocalDateTime.now());
+            mission.setFinishDate(LocalDateTime.now().plusHours(1));
 
             Mission mission1 = new Mission();
             mission1.setName("mission200");
             mission1.setImageryType(ImageryType.MULTISPECTRAL);
-            mission1.setFinishDate(LocalDateTime.now());
+            mission1.setStartDate(LocalDateTime.now());
+            mission1.setFinishDate(LocalDateTime.now().plusDays(2));
 
             missionService.saveMission(mission);
             missionService.saveMission(mission1);

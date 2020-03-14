@@ -4,6 +4,7 @@ import com.hydro17.spaceagencydatahub.utils.ImageryType;
 import lombok.Data;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Entity
@@ -14,11 +15,15 @@ public class Mission {
     private long id;
 
     @Column(unique = true)
+    @NotNull
     private String name;
 
+    @NotNull
     private ImageryType imageryType;
 
+    @NotNull
     private LocalDateTime startDate;
 
+    @NotNull
     private LocalDateTime finishDate;
 }
