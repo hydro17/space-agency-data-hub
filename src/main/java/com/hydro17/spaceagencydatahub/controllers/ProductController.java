@@ -5,6 +5,10 @@ import com.hydro17.spaceagencydatahub.exceptions.ProductNotFoundException;
 import com.hydro17.spaceagencydatahub.exceptions.ProductNullFieldException;
 import com.hydro17.spaceagencydatahub.models.Product;
 import com.hydro17.spaceagencydatahub.services.ProductService;
+import com.hydro17.spaceagencydatahub.utils.ImageryType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -12,26 +16,28 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {
 
-    private ProductService _productService;
+    private ProductService productService;
+    private Logger logger = LoggerFactory.getLogger(ProductController.class);
 
     public ProductController(ProductService productService) {
-        this._productService = productService;
+        this.productService = productService;
     }
 
     @GetMapping
     public List<Product> getAllProducts() {
-        return _productService.getAllProducts();
+        return productService.getAllProducts();
     }
 
     @GetMapping("/{id}")
     public Product getProductById(@PathVariable long id) {
-        Product product = _productService.getProductById(id);
+        Product product = productService.getProductById(id);
 
         if (product == null) {
             throw new ProductNotFoundException("There is no product with id: " + id);
@@ -40,25 +46,54 @@ public class ProductController {
         return product;
     }
 
+    @GetMapping("/find")
+    public List<Product> findProduct(@RequestParam(required = false) String missionName,
+                            @RequestParam(required = false) ImageryType imageryType,
+                            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime firstDate,
+                            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime secondDate) {
+            logger.info(">>>>>>>>>> missionName : " + missionName);
+            logger.info(">>>>>>>>>> imageryType : " + imageryType);
+            logger.info(">>>>>>>>>> firstDate : " + firstDate);
+            logger.info(">>>>>>>>>> secondDate : " + secondDate);
+
+            if (missionName != null) {
+                if (firstDate != null && secondDate == null) {
+                   return productService.getAllProductsByMissionNameAndBeforeAcquisitionDate(missionName, firstDate);
+                }
+
+                if (firstDate == null && secondDate != null) {
+                    return productService.getAllProductsByMissionNameAndAfterAcquisitionDate(missionName, secondDate);
+                }
+
+                if (firstDate != null && secondDate != null) {
+                    
+                }
+
+                return productService.getAllProductsByMissionName(missionName);
+            }
+
+            return null;
+    }
+
     @PostMapping
-    public Product saveProduct(@Valid @RequestBody Product product, BindingResult bindingResult) {
+    public Product addProduct(@Valid @RequestBody Product product, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             throw new ProductNullFieldException("One of fields of the Product object is null");
         }
 
-        Product productWithSetId = _productService.saveProduct(product);
+        Product productWithSetId = productService.saveProduct(product);
         return productWithSetId;
     }
 
     @DeleteMapping("/{id}")
     public void deleteProductById(@PathVariable long id) {
 
-        if (_productService.getProductById(id) == null) {
+        if (productService.getProductById(id) == null) {
             throw new ProductNotFoundException("There is no product with id:" + id);
         }
 
-        _productService.deleteProductById(id);
+        productService.deleteProductById(id);
     }
 
     @ExceptionHandler
