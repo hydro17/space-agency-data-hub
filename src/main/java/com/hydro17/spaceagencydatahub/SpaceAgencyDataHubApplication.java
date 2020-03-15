@@ -46,14 +46,46 @@ public class SpaceAgencyDataHubApplication {
             product.setUrl("http://com");
 
             ProductFootprint footprint = new ProductFootprint();
-            footprint.setStartCoordinateX(10.55);
-            footprint.setStartCoordinateY(20.66);
-            footprint.setEndCoordinateX(50.77);
-            footprint.setEndCoordinateY(60.88);
+            footprint.setStartCoordinateLatitude(10.55);
+            footprint.setStartCoordinateLongitude(20.66);
+            footprint.setEndCoordinateLatitude(50.77);
+            footprint.setEndCoordinateLongitude(60.88);
 
             product.setFootprint(footprint);
 
+
+            Product product1 = new Product();
+            product1.setMissionName("mission100");
+            product1.setAcquisitionDate(LocalDateTime.now().plusHours(2));
+            product1.setPrice(new BigDecimal(110.51));
+            product1.setUrl("http://com");
+
+            ProductFootprint footprint1 = new ProductFootprint();
+            footprint1.setStartCoordinateLatitude(11.55);
+            footprint1.setStartCoordinateLongitude(21.66);
+            footprint1.setEndCoordinateLatitude(51.77);
+            footprint1.setEndCoordinateLongitude(61.88);
+
+            product1.setFootprint(footprint1);
+
+
+            Product product2 = new Product();
+            product2.setMissionName("mission200");
+            product2.setAcquisitionDate(LocalDateTime.now().minusHours(1));
+            product2.setPrice(new BigDecimal(110.51));
+            product2.setUrl("http://com");
+
+            ProductFootprint footprint2 = new ProductFootprint();
+            footprint2.setStartCoordinateLatitude(11.55);
+            footprint2.setStartCoordinateLongitude(21.66);
+            footprint2.setEndCoordinateLatitude(51.77);
+            footprint2.setEndCoordinateLongitude(61.88);
+
+            product2.setFootprint(footprint2);
+
             productService.saveProduct(product);
+            productService.saveProduct(product1);
+            productService.saveProduct(product2);
         };
     }
 
