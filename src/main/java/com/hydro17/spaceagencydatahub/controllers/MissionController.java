@@ -56,9 +56,8 @@ public class MissionController {
             throw new MissionNameNotUniqueException("There is already a mission with the name: " + mission.getName());
         }
 
-        Mission missionWithIdSet = _missionService.saveMission(mission);
-
-        return missionWithIdSet;
+        Mission missionWithSetId = _missionService.saveMission(mission);
+        return missionWithSetId;
     }
 
     @PutMapping
@@ -69,7 +68,7 @@ public class MissionController {
         }
 
         if (bindingResult.hasErrors()) {
-            throw new MissionNullFieldException("One of the fields of the Mission object is null");
+            throw new MissionNullFieldException("One of fields of the Mission object is null");
         }
 
         return _missionService.updateMission(mission);
