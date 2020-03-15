@@ -14,18 +14,14 @@ public class ProductFootprint {
     private long id;
 
     @NotNull
-    @Column(name="start_coordinate_x")
-    private double startCoordinateX;
+    private double startCoordinateLatitude;
 
     @NotNull
-    @Column(name="start_coordinate_y")
-    private double startCoordinateY;
+    private double startCoordinateLongitude;
 
     @NotNull
-    @Column(name="end_coordinate_x")
-    private double endCoordinateX;
+    private double endCoordinateLatitude;
 
     @NotNull
-    @Column(name="end_coordinate_y")
-    private double endCoordinateY;
+    private double endCoordinateLongitude;
 }
