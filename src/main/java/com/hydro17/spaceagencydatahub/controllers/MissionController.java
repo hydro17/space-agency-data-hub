@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
@@ -22,21 +21,21 @@ import java.util.List;
 @RequestMapping("/api/missions")
 public class MissionController {
 
-    private MissionService _missionService;
+    private MissionService missionService;
     private Logger logger = LoggerFactory.getLogger(MissionController.class);
 
     MissionController(MissionService missionService) {
-        this._missionService = missionService;
+        this.missionService = missionService;
     }
 
     @GetMapping
     public List<Mission> getAllMissions() {
-        return _missionService.getAllMissions();
+        return missionService.getAllMissions();
     }
 
     @GetMapping("/{id}")
     public Mission getMissionById(@PathVariable long id) {
-        Mission mission = _missionService.getMissionById(id);
+        Mission mission = missionService.getMissionById(id);
 
         if (mission == null) {
             throw new MissionNotFoundException("There is no mission with id: " + id);
@@ -46,24 +45,24 @@ public class MissionController {
     }
 
     @PostMapping
-    public Mission saveMission(@Valid @RequestBody Mission mission, BindingResult bindingResult) {
+    public Mission addMission(@Valid @RequestBody Mission mission, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             throw new MissionNullFieldException("One of the fields of the Mission object is null");
         }
 
-        if (_missionService.isMissionNameUnique(mission.getName()) == false) {
+        if (missionService.isMissionNameUnique(mission.getName()) == false) {
             throw new MissionNameNotUniqueException("There is already a mission with the name: " + mission.getName());
         }
 
-        Mission missionWithSetId = _missionService.saveMission(mission);
+        Mission missionWithSetId = missionService.saveMission(mission);
         return missionWithSetId;
     }
 
     @PutMapping
     public Mission updateMission(@Valid @RequestBody Mission mission, BindingResult bindingResult) {
 
-        if (_missionService.getMissionById(mission.getId()) == null) {
+        if (missionService.getMissionById(mission.getId()) == null) {
             throw new MissionNotFoundException("There is no mission with id: " + mission.getId());
         }
 
@@ -71,18 +70,18 @@ public class MissionController {
             throw new MissionNullFieldException("One of fields of the Mission object is null");
         }
 
-        return _missionService.updateMission(mission);
+        return missionService.updateMission(mission);
     }
 
     @DeleteMapping("/{id}")
     public void deleteMissionById(@PathVariable long id) {
-        Mission mission = _missionService.getMissionById(id);
+        Mission mission = missionService.getMissionById(id);
 
         if (mission == null) {
             throw new MissionNotFoundException("There is no mission with id: " + id);
         }
 
-        _missionService.deleteMissionById(id);
+        missionService.deleteMissionById(id);
     }
 
     @ExceptionHandler
