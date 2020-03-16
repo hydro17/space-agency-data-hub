@@ -4,6 +4,7 @@ import com.hydro17.spaceagencydatahub.models.Mission;
 import com.hydro17.spaceagencydatahub.repositories.MissionRepository;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,8 +36,11 @@ public class MissionService {
         return missionWithSetId;
     }
 
+    @Transactional
     public Mission updateMission(Mission missionChanged) {
+//      In controller is checked that the mission with the given id exists so we can use get on this optional
         Mission mission = missionRepository.findById(missionChanged.getId()).get();
+
         mission.setName(missionChanged.getName());
         mission.setImageryType(missionChanged.getImageryType());
         mission.setStartDate(missionChanged.getStartDate());
