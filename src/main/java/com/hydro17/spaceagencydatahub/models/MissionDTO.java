@@ -3,20 +3,14 @@ package com.hydro17.spaceagencydatahub.models;
 import com.hydro17.spaceagencydatahub.utils.ImageryType;
 import lombok.Data;
 
-import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
-@Entity
 @Data
-public class Mission {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class MissionDTO {
+
     private long id;
 
-    @Column(unique = true)
     @NotNull
     private String name;
 
@@ -28,7 +22,4 @@ public class Mission {
 
     @NotNull
     private LocalDateTime finishDate;
-
-//    @OneToMany(mappedBy = "mission")
-//    private List<Product> products = new ArrayList<>();
 }

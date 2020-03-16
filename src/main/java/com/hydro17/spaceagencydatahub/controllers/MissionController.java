@@ -5,6 +5,7 @@ import com.hydro17.spaceagencydatahub.exceptions.MissionNameNotUniqueException;
 import com.hydro17.spaceagencydatahub.exceptions.MissionNotFoundException;
 import com.hydro17.spaceagencydatahub.exceptions.MissionNullFieldException;
 import com.hydro17.spaceagencydatahub.models.Mission;
+import com.hydro17.spaceagencydatahub.models.MissionDTO;
 import com.hydro17.spaceagencydatahub.services.MissionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -29,38 +31,69 @@ public class MissionController {
     }
 
     @GetMapping
-    public List<Mission> getAllMissions() {
-        return missionService.getAllMissions();
+    public List<MissionDTO> getAllMissions() {
+        List<Mission> missions = missionService.getAllMissions();
+
+        List<MissionDTO> missionDTOs = new ArrayList<>();
+        missions.forEach(mission -> missionDTOs.add(convertMissionToMissionDTO(mission)));
+
+        return missionDTOs;
     }
 
     @GetMapping("/{id}")
-    public Mission getMissionById(@PathVariable long id) {
+    public MissionDTO getMissionById(@PathVariable long id) {
         Mission mission = missionService.getMissionById(id);
 
         if (mission == null) {
             throw new MissionNotFoundException("There is no mission with id: " + id);
         }
 
-        return mission;
+        return convertMissionToMissionDTO(mission);
+    }
+
+    private MissionDTO convertMissionToMissionDTO(Mission mission) {
+        MissionDTO missionDTO = new MissionDTO();
+
+        missionDTO.setId(mission.getId());
+        missionDTO.setName(mission.getName());
+        missionDTO.setImageryType(mission.getImageryType());
+        missionDTO.setStartDate(mission.getStartDate());
+        missionDTO.setFinishDate(mission.getFinishDate());
+
+        return missionDTO;
     }
 
     @PostMapping
-    public Mission addMission(@Valid @RequestBody Mission mission, BindingResult bindingResult) {
+    public MissionDTO addMission(@Valid @RequestBody MissionDTO missionDTO, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             throw new MissionNullFieldException("One of the fields of the Mission object is null");
         }
 
-        if (missionService.isMissionNameUnique(mission.getName()) == false) {
-            throw new MissionNameNotUniqueException("There is already a mission with the name: " + mission.getName());
+        if (missionService.isMissionNameUnique(missionDTO.getName()) == false) {
+            throw new MissionNameNotUniqueException("There is already a mission with the name: " + missionDTO.getName());
         }
 
-        Mission missionWithSetId = missionService.saveMission(mission);
-        return missionWithSetId;
+        Mission missionWithSetId = missionService.saveMission(convertMissionDTOToMission(missionDTO));
+        return convertMissionToMissionDTO(missionWithSetId);
+    }
+
+    private Mission convertMissionDTOToMission(MissionDTO missionDTO) {
+        Mission mission = new Mission();
+
+        mission.setId(missionDTO.getId());
+        mission.setName(missionDTO.getName());
+        mission.setImageryType(missionDTO.getImageryType());
+        mission.setStartDate(missionDTO.getStartDate());
+        mission.setFinishDate(missionDTO.getFinishDate());
+
+        return mission;
     }
 
     @PutMapping
-    public Mission updateMission(@Valid @RequestBody Mission mission, BindingResult bindingResult) {
+    public MissionDTO updateMission(@Valid @RequestBody MissionDTO missionDTO, BindingResult bindingResult) {
+
+        Mission mission = convertMissionDTOToMission(missionDTO);
 
         if (missionService.getMissionById(mission.getId()) == null) {
             throw new MissionNotFoundException("There is no mission with id: " + mission.getId());
@@ -70,7 +103,8 @@ public class MissionController {
             throw new MissionNullFieldException("One of fields of the Mission object is null");
         }
 
-        return missionService.updateMission(mission);
+        Mission updatedMission = missionService.updateMission(mission);
+        return convertMissionToMissionDTO(updatedMission);
     }
 
     @DeleteMapping("/{id}")
