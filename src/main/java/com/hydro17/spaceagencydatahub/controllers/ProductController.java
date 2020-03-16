@@ -58,25 +58,8 @@ public class ProductController {
             logger.info(">>>>>>>>>> beforeDate : " + beforeDate);
             logger.info(">>>>>>>>>> latitude : " + latitude);
             logger.info(">>>>>>>>>> longitude : " + longitude);
-//            if (missionName != null) {
-////                if (beforeDate != null && afterDate == null) {
-////                   return productService.getAllProductsByMissionNameAndBeforeAcquisitionDate(missionName, beforeDate);
-////                }
-////
-////                if (beforeDate == null && afterDate != null) {
-////                    return productService.getAllProductsByMissionNameAndAfterAcquisitionDate(missionName, afterDate);
-////                }
-//
-////                if (beforeDate != null && afterDate != null) {
-////
-////                }
-//
-//                return productService.getAllProductsByMissionName(missionName);
-//            }
 
             return productService.getFilteredProducts(missionName, beforeDate, afterDate, latitude, longitude);
-
-//            return null;
     }
 
     @PostMapping

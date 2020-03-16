@@ -27,18 +27,6 @@ public class ProductService {
         return product.orElse(null);
     }
 
-    public List<Product> getAllProductsByMissionName(String missionName) {
-        return productRepository.findAllProductsByMissionName(missionName);
-    }
-
-    public List<Product> getAllProductsByMissionNameAndBeforeAcquisitionDate(String missionName, LocalDateTime firstDate) {
-        return productRepository.findAllProductsByMissionNameAndAcquisitionDateBefore(missionName, firstDate);
-    }
-
-    public List<Product> getAllProductsByMissionNameAndAfterAcquisitionDate(String missionName, LocalDateTime secondDate) {
-        return productRepository.findAllProductsByMissionNameAndAcquisitionDateBefore(missionName, secondDate);
-    }
-
     public List<Product> getFilteredProducts(String missionNme, LocalDateTime beforeDate, LocalDateTime afterDate, Double latitude, Double longitude) {
         return productRepository.findAll(ProductSpecifications.getSpecifications(missionNme, beforeDate, afterDate, latitude, longitude));
     }
