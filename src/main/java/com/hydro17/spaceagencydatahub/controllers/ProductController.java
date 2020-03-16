@@ -1,8 +1,6 @@
 package com.hydro17.spaceagencydatahub.controllers;
 
-import com.hydro17.spaceagencydatahub.exceptions.ProductErrorResponse;
-import com.hydro17.spaceagencydatahub.exceptions.ProductNotFoundException;
-import com.hydro17.spaceagencydatahub.exceptions.ProductNullFieldException;
+import com.hydro17.spaceagencydatahub.exceptions.*;
 import com.hydro17.spaceagencydatahub.models.Mission;
 import com.hydro17.spaceagencydatahub.models.MissionDTO;
 import com.hydro17.spaceagencydatahub.models.Product;
@@ -39,7 +37,7 @@ public class ProductController {
         List<Product> products = productService.getAllProducts();
 
         List<ProductDTO> productDTOs = new ArrayList<>();
-        products.forEach(product -> productDTOs.add(convertProductToProductDTO(product)));
+        products.forEach(product -> productDTOs.add(productService.convertProductToProductDTO(product)));
 
         return productDTOs;
     }
@@ -52,21 +50,7 @@ public class ProductController {
             throw new ProductNotFoundException("There is no product with id: " + id);
         }
 
-        return convertProductToProductDTO(product);
-    }
-
-    private ProductDTO convertProductToProductDTO(Product product) {
-        ProductDTO productDTO = new ProductDTO();
-
-        productDTO.setId(product.getId());
-//        CHANGE THIS
-        productDTO.setMissionName(product.getMissionName());
-        productDTO.setAcquisitionDate(product.getAcquisitionDate());
-        productDTO.setFootprint(product.getFootprint());
-        productDTO.setPrice(product.getPrice());
-        productDTO.setUrl(product.getUrl());
-
-        return productDTO;
+        return productService.convertProductToProductDTO(product);
     }
 
     @GetMapping("/find")
@@ -92,22 +76,12 @@ public class ProductController {
             throw new ProductNullFieldException("One of fields of the Product object is null");
         }
 
-        Product productWithSetId = productService.saveProduct(convertProductDTOToProduct(productDTO));
-        return convertProductToProductDTO(productWithSetId);
-    }
+        if (productService.doesMissionExist(productDTO.getMissionName()) == false) {
+            throw new MissionNotFoundException("There is no mission with name: " + productDTO.getMissionName());
+        }
 
-    private Product convertProductDTOToProduct(ProductDTO productDTO) {
-        Product product = new Product();
-
-        product.setId(productDTO.getId());
-//        CHANGE THIS
-        product.setMissionName(productDTO.getMissionName());
-        product.setAcquisitionDate(productDTO.getAcquisitionDate());
-        product.setFootprint(productDTO.getFootprint());
-        product.setPrice(productDTO.getPrice());
-        product.setUrl(productDTO.getUrl());
-
-        return product;
+        Product productWithSetId = productService.saveProduct(productService.convertProductDTOToProduct(productDTO));
+        return productService.convertProductToProductDTO(productWithSetId);
     }
 
     @DeleteMapping("/{id}")
@@ -118,6 +92,16 @@ public class ProductController {
         }
 
         productService.deleteProductById(id);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<MissionErrorResponse> handleException(MissionNotFoundException ex) {
+
+        MissionErrorResponse error = new MissionErrorResponse();
+        error.setStatus(HttpStatus.NOT_FOUND.value());
+        error.setMessage(ex.getMessage());
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler

@@ -15,8 +15,8 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @NotNull
-    private String missionName;
+//    @NotNull
+//    private String missionName;
 
     @NotNull
     private LocalDateTime acquisitionDate;
@@ -32,8 +32,8 @@ public class Product {
     @Column(length = 1024)
     private String url;
 
-//    @ManyToOne
+    @ManyToOne()
 //    @NotNull
-//    @JoinColumn(name="mission_id")
-//    private Mission mission;
+    @JoinColumn(name="mission_id")
+    private Mission mission;
 }

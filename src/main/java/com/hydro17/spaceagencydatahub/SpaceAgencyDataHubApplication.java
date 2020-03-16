@@ -40,7 +40,7 @@ public class SpaceAgencyDataHubApplication {
             missionService.saveMission(mission1);
 
             Product product = new Product();
-            product.setMissionName("mission100");
+            product.setMission(mission);
             product.setAcquisitionDate(LocalDateTime.now());
             product.setPrice(new BigDecimal(100.5));
             product.setUrl("http://com");
@@ -55,7 +55,7 @@ public class SpaceAgencyDataHubApplication {
 
 
             Product product1 = new Product();
-            product1.setMissionName("mission100");
+            product1.setMission(mission);
             product1.setAcquisitionDate(LocalDateTime.now().plusHours(2));
             product1.setPrice(new BigDecimal(110.51));
             product1.setUrl("http://com");
@@ -70,7 +70,7 @@ public class SpaceAgencyDataHubApplication {
 
 
             Product product2 = new Product();
-            product2.setMissionName("mission200");
+            product2.setMission(mission);
             product2.setAcquisitionDate(LocalDateTime.now().minusHours(1));
             product2.setPrice(new BigDecimal(110.51));
             product2.setUrl("http://com");

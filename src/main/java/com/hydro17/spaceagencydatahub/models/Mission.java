@@ -29,6 +29,7 @@ public class Mission {
     @NotNull
     private LocalDateTime finishDate;
 
-//    @OneToMany(mappedBy = "mission")
-//    private List<Product> products = new ArrayList<>();
+    @OneToMany(mappedBy = "mission",
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
+    private List<Product> products = new ArrayList<>();
 }

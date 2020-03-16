@@ -26,8 +26,12 @@ public class MissionService {
         return mission.orElse(null);
     }
 
+    public Optional<Mission> getMissionByName(String missionName) {
+        return missionRepository.findByName(missionName);
+    }
+
     public boolean isMissionNameUnique(String missionName) {
-        if (missionRepository.findByName(missionName).isPresent()) return false;
+        if (getMissionByName(missionName).isPresent()) return false;
         return true;
     }
 
