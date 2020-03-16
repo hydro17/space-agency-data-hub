@@ -1,9 +1,6 @@
 package com.hydro17.spaceagencydatahub.controllers;
 
-import com.hydro17.spaceagencydatahub.exceptions.MissionErrorResponse;
-import com.hydro17.spaceagencydatahub.exceptions.MissionNameNotUniqueException;
-import com.hydro17.spaceagencydatahub.exceptions.MissionNotFoundException;
-import com.hydro17.spaceagencydatahub.exceptions.MissionNullFieldException;
+import com.hydro17.spaceagencydatahub.exceptions.*;
 import com.hydro17.spaceagencydatahub.models.Mission;
 import com.hydro17.spaceagencydatahub.models.MissionDTO;
 import com.hydro17.spaceagencydatahub.services.MissionService;
@@ -113,6 +110,10 @@ public class MissionController {
 
         if (mission == null) {
             throw new MissionNotFoundException("There is no mission with id: " + id);
+        } else if (mission.getProducts().size() > 0) {
+            throw new MissionProductExistsException("Mission: " +  mission.getName() + " with id: " + id
+                    + " contains " + mission.getProducts().size()
+                    + " product(s). Only mission without products can be removed.");
         }
 
         missionService.deleteMissionById(id);
@@ -140,6 +141,16 @@ public class MissionController {
 
     @ExceptionHandler
     public ResponseEntity<MissionErrorResponse> handleException(MissionNullFieldException ex) {
+
+        MissionErrorResponse error = new MissionErrorResponse();
+        error.setStatus(HttpStatus.BAD_REQUEST.value());
+        error.setMessage(ex.getMessage());
+
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<MissionErrorResponse> handleException(MissionProductExistsException ex) {
 
         MissionErrorResponse error = new MissionErrorResponse();
         error.setStatus(HttpStatus.BAD_REQUEST.value());
