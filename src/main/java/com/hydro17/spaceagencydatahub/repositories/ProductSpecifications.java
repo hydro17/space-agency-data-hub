@@ -1,6 +1,7 @@
 package com.hydro17.spaceagencydatahub.repositories;
 
 import com.hydro17.spaceagencydatahub.models.Product;
+import com.hydro17.spaceagencydatahub.utils.ImageryType;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
@@ -8,7 +9,11 @@ import java.time.LocalDateTime;
 public final class ProductSpecifications {
 
     public static Specification<Product> missionNameEquals(String missionName) {
-        return (root, query, builder) -> builder.equal(root.get("missionName"), missionName);
+        return (root, query, builder) -> builder.equal(root.join("mission").get("name"), missionName);
+    }
+
+    public static Specification<Product> imageryTypeEquals(ImageryType imageryType) {
+        return (root, query, builder) -> builder.equal(root.join("mission").get("imageryType"), imageryType);
     }
 
     public static  Specification<Product> beforeDate(LocalDateTime beforeDate) {
@@ -35,9 +40,11 @@ public final class ProductSpecifications {
         return (root, query, builder) -> builder.lessThanOrEqualTo(root.join("footprint").get("startCoordinateLongitude"), longitude);
     }
 
-    public static Specification<Product> getSpecifications(String missionName, LocalDateTime beforeDate, LocalDateTime afterDate, Double latitude, Double longitude) {
+    public static Specification<Product> getSpecifications(String missionName, LocalDateTime beforeDate, LocalDateTime afterDate,
+                                                           Double latitude, Double longitude, ImageryType imageryType) {
         return Specification
                 .where(missionName == null ? null : missionNameEquals(missionName))
+                .and(imageryType == null ? null : imageryTypeEquals(imageryType))
                 .and(
 //                      if both dates are given then:
 //                          - if beforeDate is less than or equal to afterDate then

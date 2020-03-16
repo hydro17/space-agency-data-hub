@@ -6,6 +6,7 @@ import com.hydro17.spaceagencydatahub.models.ProductDTO;
 import com.hydro17.spaceagencydatahub.repositories.MissionRepository;
 import com.hydro17.spaceagencydatahub.repositories.ProductRepository;
 import com.hydro17.spaceagencydatahub.repositories.ProductSpecifications;
+import com.hydro17.spaceagencydatahub.utils.ImageryType;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -32,8 +33,9 @@ public class ProductService {
         return product.orElse(null);
     }
 
-    public List<Product> getFilteredProducts(String missionNme, LocalDateTime beforeDate, LocalDateTime afterDate, Double latitude, Double longitude) {
-        return productRepository.findAll(ProductSpecifications.getSpecifications(missionNme, beforeDate, afterDate, latitude, longitude));
+    public List<Product> getFilteredProducts(String missionNme, LocalDateTime beforeDate, LocalDateTime afterDate,
+                                             Double latitude, Double longitude, ImageryType imageryType) {
+        return productRepository.findAll(ProductSpecifications.getSpecifications(missionNme, beforeDate, afterDate, latitude, longitude, imageryType));
     }
 
     public Product saveProduct(Product product) {

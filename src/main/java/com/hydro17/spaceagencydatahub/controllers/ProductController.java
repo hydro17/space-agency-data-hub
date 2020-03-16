@@ -54,19 +54,25 @@ public class ProductController {
     }
 
     @GetMapping("/find")
-    public List<Product> findProduct(@RequestParam(required = false) String missionName,
+    public List<ProductDTO> findProduct(@RequestParam(required = false) String missionName,
                             @RequestParam(required = false) ImageryType imageryType,
                             @RequestParam(required = false) Double latitude,
                             @RequestParam(required = false) Double longitude,
                             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime beforeDate,
                             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime afterDate) {
-            logger.info(">>>>>>>>>> missionName : " + missionName);
-            logger.info(">>>>>>>>>> imageryType : " + imageryType);
-            logger.info(">>>>>>>>>> beforeDate : " + beforeDate);
-            logger.info(">>>>>>>>>> latitude : " + latitude);
-            logger.info(">>>>>>>>>> longitude : " + longitude);
 
-            return productService.getFilteredProducts(missionName, beforeDate, afterDate, latitude, longitude);
+        logger.info(">>>>>>>>>> missionName : " + missionName);
+        logger.info(">>>>>>>>>> imageryType : " + imageryType);
+        logger.info(">>>>>>>>>> beforeDate : " + beforeDate);
+        logger.info(">>>>>>>>>> latitude : " + latitude);
+        logger.info(">>>>>>>>>> longitude : " + longitude);
+
+        List<Product> products = productService.getFilteredProducts(missionName, beforeDate, afterDate, latitude, longitude, imageryType);
+
+        List<ProductDTO> productDTOs = new ArrayList<>();
+        products.forEach(product -> productDTOs.add(productService.convertProductToProductDTO(product)));
+
+        return productDTOs;
     }
 
     @PostMapping
