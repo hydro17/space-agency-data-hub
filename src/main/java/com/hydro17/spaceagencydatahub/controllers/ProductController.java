@@ -49,30 +49,34 @@ public class ProductController {
     @GetMapping("/find")
     public List<Product> findProduct(@RequestParam(required = false) String missionName,
                             @RequestParam(required = false) ImageryType imageryType,
-                            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime firstDate,
-                            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime secondDate) {
+                            @RequestParam(required = false) Double latitude,
+                            @RequestParam(required = false) Double longitude,
+                            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime beforeDate,
+                            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime afterDate) {
             logger.info(">>>>>>>>>> missionName : " + missionName);
             logger.info(">>>>>>>>>> imageryType : " + imageryType);
-            logger.info(">>>>>>>>>> firstDate : " + firstDate);
-            logger.info(">>>>>>>>>> secondDate : " + secondDate);
+            logger.info(">>>>>>>>>> beforeDate : " + beforeDate);
+            logger.info(">>>>>>>>>> latitude : " + latitude);
+            logger.info(">>>>>>>>>> longitude : " + longitude);
+//            if (missionName != null) {
+////                if (beforeDate != null && afterDate == null) {
+////                   return productService.getAllProductsByMissionNameAndBeforeAcquisitionDate(missionName, beforeDate);
+////                }
+////
+////                if (beforeDate == null && afterDate != null) {
+////                    return productService.getAllProductsByMissionNameAndAfterAcquisitionDate(missionName, afterDate);
+////                }
+//
+////                if (beforeDate != null && afterDate != null) {
+////
+////                }
+//
+//                return productService.getAllProductsByMissionName(missionName);
+//            }
 
-            if (missionName != null) {
-                if (firstDate != null && secondDate == null) {
-                   return productService.getAllProductsByMissionNameAndBeforeAcquisitionDate(missionName, firstDate);
-                }
+            return productService.getFilteredProducts(missionName, beforeDate, afterDate, latitude, longitude);
 
-                if (firstDate == null && secondDate != null) {
-                    return productService.getAllProductsByMissionNameAndAfterAcquisitionDate(missionName, secondDate);
-                }
-
-                if (firstDate != null && secondDate != null) {
-                    
-                }
-
-                return productService.getAllProductsByMissionName(missionName);
-            }
-
-            return null;
+//            return null;
     }
 
     @PostMapping

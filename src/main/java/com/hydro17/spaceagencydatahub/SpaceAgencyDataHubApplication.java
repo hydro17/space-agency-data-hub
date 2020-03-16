@@ -63,7 +63,7 @@ public class SpaceAgencyDataHubApplication {
             ProductFootprint footprint1 = new ProductFootprint();
             footprint1.setStartCoordinateLatitude(11.55);
             footprint1.setStartCoordinateLongitude(21.66);
-            footprint1.setEndCoordinateLatitude(51.77);
+            footprint1.setEndCoordinateLatitude(31.77);
             footprint1.setEndCoordinateLongitude(61.88);
 
             product1.setFootprint(footprint1);
