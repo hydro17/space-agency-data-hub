@@ -3,7 +3,10 @@ package com.hydro17.spaceagencydatahub.controllers;
 import com.hydro17.spaceagencydatahub.exceptions.ProductErrorResponse;
 import com.hydro17.spaceagencydatahub.exceptions.ProductNotFoundException;
 import com.hydro17.spaceagencydatahub.exceptions.ProductNullFieldException;
+import com.hydro17.spaceagencydatahub.models.Mission;
+import com.hydro17.spaceagencydatahub.models.MissionDTO;
 import com.hydro17.spaceagencydatahub.models.Product;
+import com.hydro17.spaceagencydatahub.models.ProductDTO;
 import com.hydro17.spaceagencydatahub.services.ProductService;
 import com.hydro17.spaceagencydatahub.utils.ImageryType;
 import org.slf4j.Logger;
@@ -17,6 +20,7 @@ import org.springframework.web.context.request.WebRequest;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -31,19 +35,38 @@ public class ProductController {
     }
 
     @GetMapping
-    public List<Product> getAllProducts() {
-        return productService.getAllProducts();
+    public List<ProductDTO> getAllProducts() {
+        List<Product> products = productService.getAllProducts();
+
+        List<ProductDTO> productDTOs = new ArrayList<>();
+        products.forEach(product -> productDTOs.add(convertProductToProductDTO(product)));
+
+        return productDTOs;
     }
 
     @GetMapping("/{id}")
-    public Product getProductById(@PathVariable long id) {
+    public ProductDTO getProductById(@PathVariable long id) {
         Product product = productService.getProductById(id);
 
         if (product == null) {
             throw new ProductNotFoundException("There is no product with id: " + id);
         }
 
-        return product;
+        return convertProductToProductDTO(product);
+    }
+
+    private ProductDTO convertProductToProductDTO(Product product) {
+        ProductDTO productDTO = new ProductDTO();
+
+        productDTO.setId(product.getId());
+//        CHANGE THIS
+        productDTO.setMissionName(product.getMissionName());
+        productDTO.setAcquisitionDate(product.getAcquisitionDate());
+        productDTO.setFootprint(product.getFootprint());
+        productDTO.setPrice(product.getPrice());
+        productDTO.setUrl(product.getUrl());
+
+        return productDTO;
     }
 
     @GetMapping("/find")
@@ -63,14 +86,28 @@ public class ProductController {
     }
 
     @PostMapping
-    public Product addProduct(@Valid @RequestBody Product product, BindingResult bindingResult) {
+    public ProductDTO addProduct(@Valid @RequestBody ProductDTO productDTO, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             throw new ProductNullFieldException("One of fields of the Product object is null");
         }
 
-        Product productWithSetId = productService.saveProduct(product);
-        return productWithSetId;
+        Product productWithSetId = productService.saveProduct(convertProductDTOToProduct(productDTO));
+        return convertProductToProductDTO(productWithSetId);
+    }
+
+    private Product convertProductDTOToProduct(ProductDTO productDTO) {
+        Product product = new Product();
+
+        product.setId(productDTO.getId());
+//        CHANGE THIS
+        product.setMissionName(productDTO.getMissionName());
+        product.setAcquisitionDate(productDTO.getAcquisitionDate());
+        product.setFootprint(productDTO.getFootprint());
+        product.setPrice(productDTO.getPrice());
+        product.setUrl(productDTO.getUrl());
+
+        return product;
     }
 
     @DeleteMapping("/{id}")
