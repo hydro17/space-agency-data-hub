@@ -18,10 +18,12 @@ public class ProductService {
 
     private ProductRepository productRepository;
     private MissionService missionService;
+    private ProductOrderService productOrderService;
 
-    public ProductService(ProductRepository productRepository, MissionService missionService) {
+    public ProductService(ProductRepository productRepository, MissionService missionService, ProductOrderService productOrderService) {
         this.productRepository = productRepository;
         this.missionService = missionService;
+        this.productOrderService = productOrderService;
     }
 
     public List<Product> getAllProducts() {
@@ -82,5 +84,16 @@ public class ProductService {
         product.setMission(mission);
 
         return product;
+    }
+
+    public List<ProductDTO> removeUrlOfUnorderedProducts(List<ProductDTO> productDTOs) {
+
+        productDTOs.forEach(productDTO -> {
+            if (productOrderService.isOrderedProductWithGivenId(productDTO.getId()) == false) {
+                productDTO.setUrl(null);
+            }
+        });
+
+        return productDTOs;
     }
 }

@@ -25,6 +25,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/missions/**").hasRole("CONTENT_MANAGER")
                 .antMatchers("/api/products").hasRole("CONTENT_MANAGER")
                 .antMatchers("/api/products/find").hasRole("CUSTOMER")
+                .antMatchers("/api/orders").hasRole("CUSTOMER")
                 .antMatchers("/h2-console/**").permitAll()
                 .and().httpBasic();
 

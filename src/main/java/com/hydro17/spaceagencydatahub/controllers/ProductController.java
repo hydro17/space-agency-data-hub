@@ -61,18 +61,18 @@ public class ProductController {
                             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime beforeDate,
                             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime afterDate) {
 
-        logger.info(">>>>>>>>>> missionName : " + missionName);
-        logger.info(">>>>>>>>>> imageryType : " + imageryType);
-        logger.info(">>>>>>>>>> beforeDate : " + beforeDate);
-        logger.info(">>>>>>>>>> latitude : " + latitude);
-        logger.info(">>>>>>>>>> longitude : " + longitude);
+//        logger.info(">>>>>>>>>> missionName : " + missionName);
+//        logger.info(">>>>>>>>>> imageryType : " + imageryType);
+//        logger.info(">>>>>>>>>> beforeDate : " + beforeDate);
+//        logger.info(">>>>>>>>>> latitude : " + latitude);
+//        logger.info(">>>>>>>>>> longitude : " + longitude);
 
         List<Product> products = productService.getFilteredProducts(missionName, beforeDate, afterDate, latitude, longitude, imageryType);
 
         List<ProductDTO> productDTOs = new ArrayList<>();
         products.forEach(product -> productDTOs.add(productService.convertProductToProductDTO(product)));
 
-        return productDTOs;
+        return productService.removeUrlOfUnorderedProducts(productDTOs);
     }
 
     @PostMapping

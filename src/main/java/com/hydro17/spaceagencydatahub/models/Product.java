@@ -10,13 +10,9 @@ import java.time.LocalDateTime;
 @Entity
 @Data
 public class Product {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-
-//    @NotNull
-//    private String missionName;
 
     @NotNull
     private LocalDateTime acquisitionDate;
@@ -33,7 +29,7 @@ public class Product {
     private String url;
 
     @ManyToOne()
-//    @NotNull
+    @NotNull
     @JoinColumn(name="mission_id")
     private Mission mission;
 }

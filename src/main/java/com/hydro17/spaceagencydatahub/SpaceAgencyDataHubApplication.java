@@ -1,9 +1,8 @@
 package com.hydro17.spaceagencydatahub;
 
-import com.hydro17.spaceagencydatahub.models.Mission;
-import com.hydro17.spaceagencydatahub.models.Product;
-import com.hydro17.spaceagencydatahub.models.ProductFootprint;
+import com.hydro17.spaceagencydatahub.models.*;
 import com.hydro17.spaceagencydatahub.services.MissionService;
+import com.hydro17.spaceagencydatahub.services.ProductOrderService;
 import com.hydro17.spaceagencydatahub.services.ProductService;
 import com.hydro17.spaceagencydatahub.utils.ImageryType;
 import org.springframework.boot.CommandLineRunner;
@@ -12,6 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 @SpringBootApplication
@@ -22,7 +22,7 @@ public class SpaceAgencyDataHubApplication {
     }
 
     @Bean
-    CommandLineRunner runner(MissionService missionService, ProductService productService) {
+    CommandLineRunner runner(MissionService missionService, ProductService productService, ProductOrderService productOrderService) {
         return args -> {
             Mission mission = new Mission();
             mission.setName("mission100");
@@ -79,13 +79,40 @@ public class SpaceAgencyDataHubApplication {
             footprint2.setStartCoordinateLatitude(11.55);
             footprint2.setStartCoordinateLongitude(21.66);
             footprint2.setEndCoordinateLatitude(51.77);
-            footprint2.setEndCoordinateLongitude(61.88);
+            footprint2.setEndCoordinateLongitude(31.88);
 
             product2.setFootprint(footprint2);
 
             productService.saveProduct(product);
             productService.saveProduct(product1);
             productService.saveProduct(product2);
+
+//          -----------------------------------------
+
+            ProductOrder productOrder = new ProductOrder();
+            productOrder.setPlacedOn(Instant.now());
+
+//            OrderItem orderItem1 = new OrderItem();
+//            orderItem1.setProduct(product);
+
+            productOrder.addProduct(product);
+//            productOrder.getOrderItems().add(orderItem1);
+
+
+//            ProductOrder productOrder1 = new ProductOrder();
+//            productOrder1.setPlacedOn(Instant.now());
+//
+//            OrderItem orderItem2 = new OrderItem();
+//            orderItem2.setProduct(product1);
+//
+//            OrderItem orderItem3 = new OrderItem();
+//            orderItem3.setProduct(product2);
+//
+//            productOrder1.getOrderItems().add(orderItem2);
+//            productOrder1.getOrderItems().add(orderItem3);
+
+            productOrderService.saveProductOrder(productOrder);
+//            productOrderService.saveProductOrder(productOrder1);
         };
     }
 
