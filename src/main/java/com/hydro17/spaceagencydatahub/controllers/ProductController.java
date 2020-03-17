@@ -99,39 +99,4 @@ public class ProductController {
 
         productService.deleteProductById(id);
     }
-
-    @ExceptionHandler
-    public ResponseEntity<MissionErrorResponse> handleException(MissionNotFoundException ex) {
-
-        MissionErrorResponse error = new MissionErrorResponse();
-        error.setStatus(HttpStatus.NOT_FOUND.value());
-        error.setMessage(ex.getMessage());
-
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<ProductErrorResponse> handleException(ProductNotFoundException ex) {
-
-        ProductErrorResponse error = new ProductErrorResponse();
-        error.setStatus(HttpStatus.NOT_FOUND.value());
-        error.setMessage(ex.getMessage());
-
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<ProductErrorResponse> handleException(ProductNullFieldException ex) {
-
-        ProductErrorResponse error = new ProductErrorResponse();
-        error.setStatus(HttpStatus.BAD_REQUEST.value());
-        error.setMessage(ex.getMessage());
-
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<String> handleAllExceptions(Exception ex, WebRequest request) {
-        return new ResponseEntity<>("|" + ex.toString() + "|", HttpStatus.BAD_REQUEST);
-    }
 }
