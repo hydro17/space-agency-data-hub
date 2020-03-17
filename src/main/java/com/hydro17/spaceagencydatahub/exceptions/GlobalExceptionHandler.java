@@ -10,9 +10,9 @@ import org.springframework.web.context.request.WebRequest;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler
-    public ResponseEntity<MissionErrorResponse> handleException(MissionNotFoundException ex) {
+    public ResponseEntity<ErrorResponse> handleException(MissionNotFoundException ex) {
 
-        MissionErrorResponse error = new MissionErrorResponse();
+        ErrorResponse error = new ErrorResponse();
         error.setStatus(HttpStatus.NOT_FOUND.value());
         error.setMessage(ex.getMessage());
 
@@ -20,9 +20,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<MissionErrorResponse> handleException(MissionNameNotUniqueException ex) {
+    public ResponseEntity<ErrorResponse> handleException(MissionNameNotUniqueException ex) {
 
-        MissionErrorResponse error = new MissionErrorResponse();
+        ErrorResponse error = new ErrorResponse();
         error.setStatus(HttpStatus.BAD_REQUEST.value());
         error.setMessage(ex.getMessage());
 
@@ -30,9 +30,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<MissionErrorResponse> handleException(MissionNullFieldException ex) {
+    public ResponseEntity<ErrorResponse> handleException(MissionNullFieldException ex) {
 
-        MissionErrorResponse error = new MissionErrorResponse();
+        ErrorResponse error = new ErrorResponse();
         error.setStatus(HttpStatus.BAD_REQUEST.value());
         error.setMessage(ex.getMessage());
 
@@ -40,9 +40,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<MissionErrorResponse> handleException(MissionProductExistsException ex) {
+    public ResponseEntity<ErrorResponse> handleException(MissionProductExistsException ex) {
 
-        MissionErrorResponse error = new MissionErrorResponse();
+        ErrorResponse error = new ErrorResponse();
         error.setStatus(HttpStatus.BAD_REQUEST.value());
         error.setMessage(ex.getMessage());
 
@@ -50,9 +50,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<ProductErrorResponse> handleException(ProductNotFoundException ex) {
+    public ResponseEntity<ErrorResponse> handleException(ProductNotFoundException ex) {
 
-        ProductErrorResponse error = new ProductErrorResponse();
+        ErrorResponse error = new ErrorResponse();
         error.setStatus(HttpStatus.NOT_FOUND.value());
         error.setMessage(ex.getMessage());
 
@@ -60,9 +60,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<ProductErrorResponse> handleException(ProductNullFieldException ex) {
+    public ResponseEntity<ErrorResponse> handleException(ProductNullFieldException ex) {
 
-        ProductErrorResponse error = new ProductErrorResponse();
+        ErrorResponse error = new ErrorResponse();
         error.setStatus(HttpStatus.BAD_REQUEST.value());
         error.setMessage(ex.getMessage());
 

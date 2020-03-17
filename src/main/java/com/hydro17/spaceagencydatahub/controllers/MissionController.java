@@ -1,16 +1,14 @@
 package com.hydro17.spaceagencydatahub.controllers;
 
-import com.hydro17.spaceagencydatahub.exceptions.*;
+import com.hydro17.spaceagencydatahub.exceptions.MissionNameNotUniqueException;
+import com.hydro17.spaceagencydatahub.exceptions.MissionNotFoundException;
+import com.hydro17.spaceagencydatahub.exceptions.MissionNullFieldException;
+import com.hydro17.spaceagencydatahub.exceptions.MissionProductExistsException;
 import com.hydro17.spaceagencydatahub.models.Mission;
 import com.hydro17.spaceagencydatahub.models.MissionDTO;
 import com.hydro17.spaceagencydatahub.services.MissionService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.WebRequest;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -21,7 +19,6 @@ import java.util.List;
 public class MissionController {
 
     private MissionService missionService;
-    private Logger logger = LoggerFactory.getLogger(MissionController.class);
 
     MissionController(MissionService missionService) {
         this.missionService = missionService;
