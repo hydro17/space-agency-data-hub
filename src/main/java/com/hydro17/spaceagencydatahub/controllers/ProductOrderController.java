@@ -1,6 +1,8 @@
 package com.hydro17.spaceagencydatahub.controllers;
 
 import com.hydro17.spaceagencydatahub.exceptions.ErrorResponse;
+import com.hydro17.spaceagencydatahub.exceptions.ProductErrorResponse;
+import com.hydro17.spaceagencydatahub.exceptions.ProductNotFoundException;
 import com.hydro17.spaceagencydatahub.exceptions.ProductOrderNoOrderItemsException;
 import com.hydro17.spaceagencydatahub.models.*;
 import com.hydro17.spaceagencydatahub.services.ProductOrderService;
@@ -72,6 +74,11 @@ public class ProductOrderController {
 
         productOrderDTOInput.getProductIds().forEach(productId -> {
             Product product = productService.getProductById(productId);
+
+            if (product == null) {
+                throw new ProductNotFoundException("There is no product with id: " + productId);
+            }
+
             productOrder.addProduct(product);
         });
         return productOrder;
@@ -85,5 +92,15 @@ public class ProductOrderController {
         error.setMessage(ex.getMessage());
 
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ProductErrorResponse> handleException(ProductNotFoundException ex) {
+
+        ProductErrorResponse error = new ProductErrorResponse();
+        error.setStatus(HttpStatus.NOT_FOUND.value());
+        error.setMessage(ex.getMessage());
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 }
