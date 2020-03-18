@@ -35,8 +35,8 @@ public class GlobalExceptionHandler {
 //        throw new MissionNullFieldException("Bad data");
 //    }
 
-    @ExceptionHandler
-    public ResponseEntity<String> handleAllExceptions(Exception ex, WebRequest request) {
-        return new ResponseEntity<>("|" + ex.toString() + "|", HttpStatus.BAD_REQUEST);
-    }
+//    @ExceptionHandler
+//    public ResponseEntity<String> handleAllExceptions(Exception ex, WebRequest request) {
+//        return new ResponseEntity<>("|" + ex.toString() + "|", HttpStatus.BAD_REQUEST);
+//    }
 }

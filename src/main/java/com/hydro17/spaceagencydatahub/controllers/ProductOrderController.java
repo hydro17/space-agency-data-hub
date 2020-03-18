@@ -24,7 +24,7 @@ public class ProductOrderController {
     }
 
     @GetMapping
-    public List<ProductOrderDTOOutput> getAllProductOrdersOrderedByPlacedOn() {
+    public List<ProductOrderDTOOutput> getAllProductOrdersOrderedByPlacedOnDesc() {
         List<ProductOrder> productOrders = productOrderService.getAllProductOrdersOrderedByPlacedOnDesc();
 
         List<ProductOrderDTOOutput> ProductOrderDTOsOutput = new ArrayList<>();

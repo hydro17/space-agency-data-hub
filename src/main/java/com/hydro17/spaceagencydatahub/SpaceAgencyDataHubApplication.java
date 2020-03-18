@@ -39,6 +39,8 @@ public class SpaceAgencyDataHubApplication {
             missionService.saveMission(mission);
             missionService.saveMission(mission1);
 
+//          -----------------------------------------
+
             Product product = new Product();
             product.setMission(mission);
             product.setAcquisitionDate(LocalDateTime.now());
@@ -91,28 +93,15 @@ public class SpaceAgencyDataHubApplication {
 
             ProductOrder productOrder = new ProductOrder();
             productOrder.setPlacedOn(Instant.now());
-
-//            OrderItem orderItem1 = new OrderItem();
-//            orderItem1.setProduct(product);
-
             productOrder.addProduct(product);
-//            productOrder.getOrderItems().add(orderItem1);
 
-
-//            ProductOrder productOrder1 = new ProductOrder();
-//            productOrder1.setPlacedOn(Instant.now());
-//
-//            OrderItem orderItem2 = new OrderItem();
-//            orderItem2.setProduct(product1);
-//
-//            OrderItem orderItem3 = new OrderItem();
-//            orderItem3.setProduct(product2);
-//
-//            productOrder1.getOrderItems().add(orderItem2);
-//            productOrder1.getOrderItems().add(orderItem3);
+            ProductOrder productOrder1 = new ProductOrder();
+            productOrder1.setPlacedOn(Instant.now().plusSeconds(100L));
+            productOrder1.addProduct(product1);
+            productOrder1.addProduct(product2);
 
             productOrderService.saveProductOrder(productOrder);
-//            productOrderService.saveProductOrder(productOrder1);
+            productOrderService.saveProductOrder(productOrder1);
         };
     }
 

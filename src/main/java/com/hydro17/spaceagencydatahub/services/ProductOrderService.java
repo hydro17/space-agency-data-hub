@@ -19,11 +19,6 @@ public class ProductOrderService {
         return productOrderRepository.findAll();
     }
 
-//    public ProductOrder getProductOrderById(long id) {
-//        Optional<ProductOrder> productOrder = productOrderRepository.findById(id);
-//        return productOrder.orElse(null);
-//    }
-
     public List<ProductOrder> getAllProductOrdersOrderedByPlacedOn() {
        return productOrderRepository.findAllOrderByPlacedOn();
     }
@@ -38,6 +33,6 @@ public class ProductOrderService {
     }
 
     public boolean isOrderedProductWithGivenId(long id) {
-        return productOrderRepository.findAllProductOrdersContainingProductWithGivenId(id).size() > 0 ? true : false;
+        return productOrderRepository.findAllProductOrdersContainingProductWithGivenId(id).size() > 0;
     }
 }
