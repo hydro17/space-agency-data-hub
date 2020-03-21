@@ -1,7 +1,7 @@
 package com.hydro17.spaceagencydatahub.services;
 
+import com.hydro17.spaceagencydatahub.models.IProductAndOrderCount;
 import com.hydro17.spaceagencydatahub.models.Product;
-import com.hydro17.spaceagencydatahub.models.ProductAndOrderCount;
 import com.hydro17.spaceagencydatahub.repositories.OrderItemRepository;
 import org.springframework.stereotype.Service;
 
@@ -17,15 +17,11 @@ public class OrderItemService {
         this.orderItemRepository = orderItemRepository;
     }
 
-//    public List<Object[]> getAllProductAndOrderCountGroupedByProductIdOrderedByOrderCountDesc() {
-//        return orderItemRepository.findAllProductAndOrderCountGroupedByProductIdOrderedByOrderCountDesc();
-//    }
-
-    public List<ProductAndOrderCount> getAllProductAndOrderCountGroupedByProductIdOrderedByOrderCountDesc() {
+    public List<IProductAndOrderCount> getAllProductAndOrderCountGroupedByProductIdOrderedByOrderCountDesc() {
         return orderItemRepository.findAllProductAndOrderCountGroupedByProductIdOrderedByOrderCountDesc();
     }
 
-    public List<Product> convertAllProductAndOrderCountToProduct(List<ProductAndOrderCount> productAndOrderCounts) {
+    public List<Product> convertAllProductAndOrderCountToProduct(List<IProductAndOrderCount> productAndOrderCounts) {
         List<Product> products = new ArrayList<>();
 
         productAndOrderCounts.forEach(productAndOrderCount -> products.add(productAndOrderCount.getProduct()));
