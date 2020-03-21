@@ -4,7 +4,9 @@ import com.hydro17.spaceagencydatahub.exceptions.MissionNotFoundException;
 import com.hydro17.spaceagencydatahub.exceptions.ProductNotFoundException;
 import com.hydro17.spaceagencydatahub.exceptions.ProductNullFieldException;
 import com.hydro17.spaceagencydatahub.models.Product;
+import com.hydro17.spaceagencydatahub.models.ProductAndOrderCount;
 import com.hydro17.spaceagencydatahub.models.ProductDTO;
+import com.hydro17.spaceagencydatahub.services.OrderItemService;
 import com.hydro17.spaceagencydatahub.services.ProductService;
 import com.hydro17.spaceagencydatahub.utils.ImageryType;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -21,9 +23,11 @@ import java.util.List;
 public class ProductController {
 
     private ProductService productService;
+    private OrderItemService orderItemService;
 
-    public ProductController(ProductService productService) {
+    public ProductController(ProductService productService, OrderItemService orderItemService) {
         this.productService = productService;
+        this.orderItemService = orderItemService;
     }
 
     @GetMapping
@@ -61,6 +65,22 @@ public class ProductController {
         products.forEach(product -> productDTOs.add(productService.convertProductToProductDTO(product)));
 
         return productService.removeUrlOfUnorderedProducts(productDTOs);
+    }
+
+    @GetMapping("/most-ordered")
+    public List<ProductDTO> getProductsGroupedByProductIdOrderedByOrderCountDesc() {
+        List<ProductAndOrderCount> productAndOrderCounts =
+                orderItemService.getAllProductAndOrderCountGroupedByProductIdOrderedByOrderCountDesc();
+
+//        List<Object[]> productAndOrderCounts =
+//                orderItemService.getAllProductAndOrderCountGroupedByProductIdOrderedByOrderCountDesc();
+
+        List<Product> products = orderItemService.convertAllProductAndOrderCountToProduct(productAndOrderCounts);
+
+        List<ProductDTO> productDTOs = new ArrayList<>();
+        products.forEach(product -> productDTOs.add(productService.convertProductToProductDTO(product)));
+
+        return productDTOs;
     }
 
     @PostMapping

@@ -15,12 +15,8 @@ public class ProductOrderService {
         this.productOrderRepository = productOrderRepository;
     }
 
-    public List<ProductOrder> getAllOrders() {
+    public List<ProductOrder> getAllProductOrders() {
         return productOrderRepository.findAll();
-    }
-
-    public List<ProductOrder> getAllProductOrdersOrderedByPlacedOn() {
-       return productOrderRepository.findAllOrderByPlacedOn();
     }
 
     public List<ProductOrder> getAllProductOrdersOrderedByPlacedOnDesc() {

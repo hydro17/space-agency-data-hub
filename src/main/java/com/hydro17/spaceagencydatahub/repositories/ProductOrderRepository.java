@@ -12,9 +12,6 @@ import java.util.List;
 @Repository
 public interface ProductOrderRepository extends JpaRepository<ProductOrder, Long> {
 
-    @Query("SELECT po FROM ProductOrder po ORDER BY po.placedOn")
-    List<ProductOrder> findAllOrderByPlacedOn();
-
     @Query("SELECT po FROM ProductOrder po ORDER BY po.placedOn DESC")
     List<ProductOrder> findAllOrderByPlacedOnDesc();
 

@@ -23,7 +23,7 @@ public class ProductOrderController {
         this.productService = productService;
     }
 
-    @GetMapping
+    @GetMapping("/history")
     public List<ProductOrderDTOOutput> getAllProductOrdersOrderedByPlacedOnDesc() {
         List<ProductOrder> productOrders = productOrderService.getAllProductOrdersOrderedByPlacedOnDesc();
 
