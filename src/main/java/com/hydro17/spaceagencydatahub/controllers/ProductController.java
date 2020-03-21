@@ -31,57 +31,43 @@ public class ProductController {
     }
 
     @GetMapping
-    public List<ProductDTO> getAllProducts() {
-        List<Product> products = productService.getAllProducts();
-
-        List<ProductDTO> productDTOs = new ArrayList<>();
-        products.forEach(product -> productDTOs.add(productService.convertProductToProductDTO(product)));
-
-        return productDTOs;
+    public List<Product> getAllProducts() {
+        return productService.getAllProducts();
     }
 
     @GetMapping("/{id}")
-    public ProductDTO getProductById(@PathVariable long id) {
+    public Product getProductById(@PathVariable long id) {
         Product product = productService.getProductById(id);
 
         if (product == null) {
             throw new ProductNotFoundException("There is no product with id: " + id);
         }
 
-        return productService.convertProductToProductDTO(product);
+        return product;
     }
 
     @GetMapping("/find")
-    public List<ProductDTO> findProduct(@RequestParam(required = false) String missionName,
+    public List<Product> findProduct(@RequestParam(required = false) String missionName,
                             @RequestParam(required = false) ImageryType imageryType,
                             @RequestParam(required = false) Double latitude,
                             @RequestParam(required = false) Double longitude,
                             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime beforeDate,
                             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime afterDate) {
 
-        List<Product> products = productService.getFilteredProducts(missionName, beforeDate, afterDate, latitude, longitude, imageryType);
-
-        List<ProductDTO> productDTOs = new ArrayList<>();
-        products.forEach(product -> productDTOs.add(productService.convertProductToProductDTO(product)));
-
-        return productService.removeUrlOfUnorderedProducts(productDTOs);
+        return productService.getFilteredProducts(missionName, beforeDate, afterDate, latitude, longitude, imageryType);
     }
 
     @GetMapping("/most-ordered")
-    public List<ProductDTO> getProductsGroupedByProductIdOrderedByOrderCountDesc() {
+    public List<Product> getProductsGroupedByProductIdOrderedByOrderCountDesc() {
         List<IProductAndOrderCount> productAndProductOrderCounts =
                 orderItemService.getAllProductAndOrderCountGroupedByProductIdOrderedByOrderCountDesc();
 
         List<Product> products = orderItemService.convertAllProductAndOrderCountToProduct(productAndProductOrderCounts);
-
-        List<ProductDTO> productDTOs = new ArrayList<>();
-        products.forEach(product -> productDTOs.add(productService.convertProductToProductDTO(product)));
-
-        return productDTOs;
+        return products;
     }
 
     @PostMapping
-    public ProductDTO addProduct(@Valid @RequestBody ProductDTO productDTO, BindingResult bindingResult) {
+    public Product addProduct(@Valid @RequestBody ProductDTO productDTO, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             throw new ProductNullFieldException("One of fields of the Product object is null");
@@ -92,7 +78,7 @@ public class ProductController {
         }
 
         Product productWithSetId = productService.saveProduct(productService.convertProductDTOToProduct(productDTO));
-        return productService.convertProductToProductDTO(productWithSetId);
+        return productWithSetId;
     }
 
     @DeleteMapping("/{id}")

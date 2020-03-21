@@ -1,5 +1,7 @@
 package com.hydro17.spaceagencydatahub.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -9,6 +11,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Data
+@JsonPropertyOrder({"id", "missionName", "acquisitionDate", "footprint", "price", "url"})
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,8 +31,13 @@ public class Product {
     @Column(length = 1024)
     private String url;
 
+    @JsonIgnore
     @ManyToOne()
     @NotNull
     @JoinColumn(name="mission_id")
     private Mission mission;
+
+    public String getMissionName() {
+        return mission.getName();
+    }
 }

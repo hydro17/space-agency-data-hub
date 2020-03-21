@@ -72,8 +72,6 @@ public class ProductService {
         Product product = new Product();
 
         product.setId(productDTO.getId());
-//        CHANGE THIS
-//        product.setMissionName(productDTO.getMissionName());
         product.setAcquisitionDate(productDTO.getAcquisitionDate());
         product.setFootprint(productDTO.getFootprint());
         product.setPrice(productDTO.getPrice());
