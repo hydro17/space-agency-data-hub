@@ -54,20 +54,6 @@ public class ProductService {
         return false;
     }
 
-    public ProductDTO convertProductToProductDTO(Product product) {
-        ProductDTO productDTO = new ProductDTO();
-
-        productDTO.setId(product.getId());
-//        CHANGE THIS
-        productDTO.setMissionName(product.getMission().getName());
-        productDTO.setAcquisitionDate(product.getAcquisitionDate());
-        productDTO.setFootprint(product.getFootprint());
-        productDTO.setPrice(product.getPrice());
-        productDTO.setUrl(product.getUrl());
-
-        return productDTO;
-    }
-
     public Product convertProductDTOToProduct(ProductDTO productDTO) {
         Product product = new Product();
 
@@ -84,14 +70,14 @@ public class ProductService {
         return product;
     }
 
-    public List<ProductDTO> removeUrlOfUnorderedProducts(List<ProductDTO> productDTOs) {
+    public List<Product> removeUrlOfUnorderedProducts(List<Product> products) {
 
-        productDTOs.forEach(productDTO -> {
-            if (productOrderService.isOrderedProductWithGivenId(productDTO.getId()) == false) {
-                productDTO.setUrl(null);
-            }
-        });
+            products.forEach(product -> {
+                if (productOrderService.isOrderedProductWithGivenId(product.getId()) == false) {
+                    product.setUrl(null);
+                }
+            });
 
-        return productDTOs;
+        return products;
     }
 }

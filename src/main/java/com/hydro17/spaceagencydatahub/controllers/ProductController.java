@@ -54,7 +54,8 @@ public class ProductController {
                             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime beforeDate,
                             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime afterDate) {
 
-        return productService.getFilteredProducts(missionName, beforeDate, afterDate, latitude, longitude, imageryType);
+        List<Product> products = productService.getFilteredProducts(missionName, beforeDate, afterDate, latitude, longitude, imageryType);
+        return productService.removeUrlOfUnorderedProducts(products);
     }
 
     @GetMapping("/most-ordered")

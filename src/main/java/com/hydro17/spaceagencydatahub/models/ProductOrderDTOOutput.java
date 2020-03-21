@@ -11,9 +11,9 @@ public class ProductOrderDTOOutput {
 
     private long id;
     private Instant placedOn;
-    private List<ProductDTO> productDTOs = new ArrayList<>();
+    private List<Product> products = new ArrayList<>();
 
-    public void addProductDTO(ProductDTO productDTO) {
-        productDTOs.add(productDTO);
+    public void addProduct(Product product) {
+        products.add(product);
     }
 }

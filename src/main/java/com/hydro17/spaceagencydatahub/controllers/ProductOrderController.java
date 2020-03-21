@@ -43,9 +43,7 @@ public class ProductOrderController {
         productOrderDTOOutput.setPlacedOn(productOrder.getPlacedOn());
 
         productOrder.getOrderItems().forEach(orderItem -> {
-            Product product = orderItem.getProduct();
-            ProductDTO productDTO = productService.convertProductToProductDTO(product);
-            productOrderDTOOutput.addProductDTO(productDTO);
+            productOrderDTOOutput.addProduct(orderItem.getProduct());
         });
 
         return productOrderDTOOutput;
