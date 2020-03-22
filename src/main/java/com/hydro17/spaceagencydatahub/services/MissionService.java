@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class MissionService {
+public class MissionService implements IMissionService {
 
     private MissionRepository missionRepository;
 

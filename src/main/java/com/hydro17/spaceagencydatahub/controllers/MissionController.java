@@ -6,7 +6,7 @@ import com.hydro17.spaceagencydatahub.exceptions.MissionNullFieldException;
 import com.hydro17.spaceagencydatahub.exceptions.MissionProductExistsException;
 import com.hydro17.spaceagencydatahub.models.Mission;
 import com.hydro17.spaceagencydatahub.models.MissionDTO;
-import com.hydro17.spaceagencydatahub.services.MissionService;
+import com.hydro17.spaceagencydatahub.services.IMissionService;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,9 +18,9 @@ import java.util.List;
 @RequestMapping("/api/missions")
 public class MissionController {
 
-    private MissionService missionService;
+    private IMissionService missionService;
 
-    MissionController(MissionService missionService) {
+    MissionController(IMissionService missionService) {
         this.missionService = missionService;
     }
 
@@ -107,7 +107,9 @@ public class MissionController {
 
         if (mission == null) {
             throw new MissionNotFoundException("There is no mission with id: " + id);
-        } else if (mission.getProducts().size() > 0) {
+        }
+
+        if (mission.getProducts().size() > 0) {
             throw new MissionProductExistsException("Mission: " +  mission.getName() + " with id: " + id
                     + " contains " + mission.getProducts().size()
                     + " product(s). Only mission without products can be removed.");
