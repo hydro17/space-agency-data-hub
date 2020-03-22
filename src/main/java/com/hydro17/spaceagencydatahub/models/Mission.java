@@ -1,5 +1,6 @@
 package com.hydro17.spaceagencydatahub.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hydro17.spaceagencydatahub.utils.ImageryType;
 import lombok.Data;
 
@@ -29,6 +30,7 @@ public class Mission {
     @NotNull
     private LocalDateTime finishDate;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "mission",
             cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
     private List<Product> products = new ArrayList<>();
