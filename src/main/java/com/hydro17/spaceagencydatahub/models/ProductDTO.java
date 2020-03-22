@@ -1,13 +1,13 @@
 package com.hydro17.spaceagencydatahub.models;
 
-import lombok.Data;
+import lombok.Getter;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Data
+@Getter
 public class ProductDTO {
 
     private long id;
