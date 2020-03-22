@@ -64,7 +64,7 @@ public class ProductService {
         product.setUrl(productDTO.getUrl());
 
         Mission mission = missionService.getMissionByName(productDTO.getMissionName()).get();
-        mission.getProducts().add(product);
+        mission.addProduct(product);
         product.setMission(mission);
 
         return product;

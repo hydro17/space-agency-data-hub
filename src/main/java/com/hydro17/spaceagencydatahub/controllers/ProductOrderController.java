@@ -7,8 +7,7 @@ import com.hydro17.spaceagencydatahub.services.ProductOrderService;
 import com.hydro17.spaceagencydatahub.services.ProductService;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Instant;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -24,33 +23,13 @@ public class ProductOrderController {
     }
 
     @GetMapping("/history")
-    public List<ProductOrderDTOOutput> getAllProductOrdersOrderedByPlacedOnDesc() {
+    public List<ProductOrder> getAllProductOrdersOrderedByPlacedOnDesc() {
         List<ProductOrder> productOrders = productOrderService.getAllProductOrdersOrderedByPlacedOnDesc();
-
-        List<ProductOrderDTOOutput> ProductOrderDTOsOutput = new ArrayList<>();
-
-        productOrders.forEach(productOrder -> {
-            ProductOrderDTOOutput productOrderDTOOutput = convertProductOrderToProductOrderDTOOutput(productOrder);
-            ProductOrderDTOsOutput.add(productOrderDTOOutput);
-        });
-
-        return ProductOrderDTOsOutput;
-    }
-
-    private ProductOrderDTOOutput convertProductOrderToProductOrderDTOOutput(ProductOrder productOrder) {
-        ProductOrderDTOOutput productOrderDTOOutput = new ProductOrderDTOOutput();
-        productOrderDTOOutput.setId(productOrder.getId());
-        productOrderDTOOutput.setPlacedOn(productOrder.getPlacedOn());
-
-        productOrder.getOrderItems().forEach(orderItem -> {
-            productOrderDTOOutput.addProduct(orderItem.getProduct());
-        });
-
-        return productOrderDTOOutput;
+        return productOrders;
     }
 
     @PostMapping
-    public ProductOrderDTOOutput addOrder(@RequestBody ProductOrderDTOInput productOrderDTOInput) {
+    public ProductOrder addOrder(@RequestBody ProductOrderDTOInput productOrderDTOInput) {
 
         if (productOrderDTOInput == null || productOrderDTOInput.getProductIds().size() == 0) {
             throw new ProductOrderNoOrderItemsException("Order is empty. Order has to contain at least one product.");
@@ -59,12 +38,12 @@ public class ProductOrderController {
         ProductOrder productOrder = convertProductOrderDTOInputToProductOrder(productOrderDTOInput);
 
         ProductOrder productOrderWithSetId = productOrderService.saveProductOrder(productOrder);
-        return convertProductOrderToProductOrderDTOOutput(productOrderWithSetId);
+        return productOrderWithSetId;
     }
 
     private ProductOrder convertProductOrderDTOInputToProductOrder(ProductOrderDTOInput productOrderDTOInput) {
         ProductOrder productOrder = new ProductOrder();
-        productOrder.setPlacedOn(Instant.now());
+        productOrder.setPlacedOn(LocalDateTime.now());
 
         productOrderDTOInput.getProductIds().forEach(productId -> {
             Product product = productService.getProductById(productId);
