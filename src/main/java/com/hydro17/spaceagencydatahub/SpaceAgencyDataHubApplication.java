@@ -1,7 +1,6 @@
 package com.hydro17.spaceagencydatahub;
 
 import com.hydro17.spaceagencydatahub.models.*;
-import com.hydro17.spaceagencydatahub.services.IMissionService;
 import com.hydro17.spaceagencydatahub.services.MissionService;
 import com.hydro17.spaceagencydatahub.services.ProductOrderService;
 import com.hydro17.spaceagencydatahub.services.ProductService;
@@ -23,7 +22,7 @@ public class SpaceAgencyDataHubApplication {
     }
 
     @Bean
-    CommandLineRunner runner(IMissionService missionService, ProductService productService, ProductOrderService productOrderService) {
+    CommandLineRunner runner(MissionService missionService, ProductService productService, ProductOrderService productOrderService) {
         return args -> {
             Mission mission = new Mission();
             mission.setName("mission100");
@@ -78,7 +77,7 @@ public class SpaceAgencyDataHubApplication {
             product2.setMission(mission);
             mission.addProduct(product2);
             product2.setAcquisitionDate(LocalDateTime.now().minusHours(1));
-            product2.setPrice(new BigDecimal(110.51));
+            product2.setPrice(new BigDecimal("110.51"));
             product2.setUrl("http://com");
 
             ProductFootprint footprint2 = new ProductFootprint();

@@ -5,7 +5,7 @@ import com.hydro17.spaceagencydatahub.exceptions.MissionNotFoundException;
 import com.hydro17.spaceagencydatahub.exceptions.MissionNullFieldException;
 import com.hydro17.spaceagencydatahub.exceptions.MissionProductExistsException;
 import com.hydro17.spaceagencydatahub.models.Mission;
-import com.hydro17.spaceagencydatahub.services.IMissionService;
+import com.hydro17.spaceagencydatahub.services.MissionService;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,9 +16,9 @@ import java.util.List;
 @RequestMapping("/api/missions")
 public class MissionController {
 
-    private IMissionService missionService;
+    private MissionService missionService;
 
-    MissionController(IMissionService missionService) {
+    MissionController(MissionService missionService) {
         this.missionService = missionService;
     }
 
@@ -58,6 +58,10 @@ public class MissionController {
 
         if (missionService.getMissionById(mission.getId()) == null) {
             throw new MissionNotFoundException("There is no mission with id: " + mission.getId());
+        }
+
+        if (missionService.isMissionNameUniqueForMissionsWithOtherIds(mission.getName(), mission.getId()) == false) {
+            throw new MissionNameNotUniqueException("There is already a mission with the name: " + mission.getName());
         }
 
         if (bindingResult.hasErrors()) {

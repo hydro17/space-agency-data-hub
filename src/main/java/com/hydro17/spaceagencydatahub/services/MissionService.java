@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class MissionService implements IMissionService {
+public class MissionService {
 
     private MissionRepository missionRepository;
 
@@ -32,6 +32,11 @@ public class MissionService implements IMissionService {
 
     public boolean isMissionNameUnique(String missionName) {
         if (getMissionByName(missionName).isPresent()) return false;
+        return true;
+    }
+
+    public boolean isMissionNameUniqueForMissionsWithOtherIds(String missionName, Long missionId) {
+        if (missionRepository.findByNameAndNotEqualId(missionName, missionId).isPresent()) return false;
         return true;
     }
 
