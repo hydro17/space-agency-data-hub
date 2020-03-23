@@ -29,23 +29,23 @@ public class ProductOrderController {
     }
 
     @PostMapping
-    public ProductOrder addOrder(@RequestBody ProductOrderDTOInput productOrderDTOInput) {
+    public ProductOrder addOrder(@RequestBody ProductOrderDTO productOrderDTO) {
 
-        if (productOrderDTOInput == null || productOrderDTOInput.getProductIds().size() == 0) {
+        if (productOrderDTO == null || productOrderDTO.getProductIds().size() == 0) {
             throw new ProductOrderNoOrderItemsException("Order is empty. Order has to contain at least one product.");
         }
 
-        ProductOrder productOrder = convertProductOrderDTOInputToProductOrder(productOrderDTOInput);
+        ProductOrder productOrder = convertProductOrderDTOInputToProductOrder(productOrderDTO);
 
         ProductOrder productOrderWithSetId = productOrderService.saveProductOrder(productOrder);
         return productOrderWithSetId;
     }
 
-    private ProductOrder convertProductOrderDTOInputToProductOrder(ProductOrderDTOInput productOrderDTOInput) {
+    private ProductOrder convertProductOrderDTOInputToProductOrder(ProductOrderDTO productOrderDTO) {
         ProductOrder productOrder = new ProductOrder();
         productOrder.setPlacedOn(LocalDateTime.now());
 
-        productOrderDTOInput.getProductIds().forEach(productId -> {
+        productOrderDTO.getProductIds().forEach(productId -> {
             Product product = productService.getProductById(productId);
 
             if (product == null) {

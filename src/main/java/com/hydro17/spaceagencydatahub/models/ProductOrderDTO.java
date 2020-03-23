@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class ProductOrderDTOInput {
+public class ProductOrderDTO {
 
     private List<Long> productIds = new ArrayList<>();
 }
