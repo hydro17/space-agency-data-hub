@@ -1,6 +1,8 @@
 package com.hydro17.spaceagencydatahub.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hydro17.spaceagencydatahub.exceptions.ErrorResponse;
+import com.hydro17.spaceagencydatahub.exceptions.MissionNotFoundException;
 import com.hydro17.spaceagencydatahub.models.Mission;
 import com.hydro17.spaceagencydatahub.models.Product;
 import com.hydro17.spaceagencydatahub.models.ProductFootprint;
@@ -13,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -29,94 +32,62 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = MissionController.class)
-@WithMockUser(username = "ContentManager", roles = {"CONTENT_MANAGER"})
+@WithMockUser(roles = "CONTENT_MANAGER")
 class MissionControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    ObjectMapper objectMapper;
+    private ObjectMapper objectMapper;
 
     @MockBean
-    MissionService missionService;
+    private MissionService missionService;
 
-//  Due to CommandLineRunner in SpaceAgencyDataHubApplication
+//  Added due to CommandLineRunner in the class SpaceAgencyDataHubApplication
     @MockBean
-    ProductService productService;
+    private ProductService productService;
 
-//  Due to CommandLineRunner in SpaceAgencyDataHubApplication
+//  Added due to CommandLineRunner in the class SpaceAgencyDataHubApplication
     @MockBean
-    ProductOrderService productOrderService;
+    private ProductOrderService productOrderService;
 
-    List<Mission> emptyListOfMissions;
-    List<Mission> nonEmptyListOfMissions;
+    private List<Mission> emptyListOfMissions;
+    private List<Mission> nonEmptyListOfMissions;
 
-    Mission missionWithIdEqualZero;
-    Mission missionWithIdNotEqualZero;
-    Mission missionWithoutProducts;
-    Mission missionWithOneProduct;
-    Mission missionWithNullImageryTypeField;
-    Mission missionWithIdEqual1;
-    Mission missionWithIdEqual1Changed;
-
-    ProductFootprint footprint1;
-
-    Product product1;
+    private Mission missionWithOneProduct;
+    private Mission missionWithNullImageryTypeField;
+    private Mission mission;
 
     @BeforeEach
-    public void init() {
+    void init() {
         emptyListOfMissions = new ArrayList<>();
         nonEmptyListOfMissions = new ArrayList<>();
 
-        missionWithIdEqualZero = new Mission();
-        missionWithIdEqualZero.setId(0);
-        missionWithIdEqualZero.setName("mission1");
-        missionWithIdEqualZero.setImageryType(ImageryType.PANCHROMATIC);
-        missionWithIdEqualZero.setStartDate(LocalDateTime.now());
-        missionWithIdEqualZero.setFinishDate(LocalDateTime.now().plusHours(1L));
-
-        missionWithIdNotEqualZero = new Mission();
-        missionWithIdNotEqualZero.setId(1L);
-        missionWithIdNotEqualZero.setName("mission1");
-        missionWithIdNotEqualZero.setImageryType(ImageryType.PANCHROMATIC);
-        missionWithIdNotEqualZero.setStartDate(LocalDateTime.now());
-        missionWithIdNotEqualZero.setFinishDate(LocalDateTime.now().plusHours(1L));
-
-        missionWithoutProducts = new Mission();
-        missionWithoutProducts.setId(1L);
-        missionWithoutProducts.setName("mission2");
-        missionWithoutProducts.setImageryType(ImageryType.HYPERSPECTRAL);
-        missionWithoutProducts.setStartDate(LocalDateTime.now());
-        missionWithoutProducts.setFinishDate(LocalDateTime.now().plusHours(1L));
-
         missionWithNullImageryTypeField = new Mission();
-        missionWithoutProducts.setId(1L);
-        missionWithoutProducts.setName("mission without imagery type");
-        missionWithoutProducts.setStartDate(LocalDateTime.now());
-        missionWithoutProducts.setFinishDate(LocalDateTime.now().plusHours(1L));
+        missionWithNullImageryTypeField.setId(1L);
+        missionWithNullImageryTypeField.setName("mission without imagery type");
+        missionWithNullImageryTypeField.setStartDate(LocalDateTime.now());
+        missionWithNullImageryTypeField.setFinishDate(LocalDateTime.now().plusHours(1L));
 
-        missionWithIdEqual1 = new Mission();
-        missionWithIdEqual1.setId(1);
+        mission = new Mission();
+        mission.setId(1L);
+        mission.setName("mission no prodducts, no nulll fields");
+        mission.setImageryType(ImageryType.HYPERSPECTRAL);
+        mission.setStartDate(LocalDateTime.now());
+        mission.setFinishDate(LocalDateTime.now().plusHours(1L));
 
-        missionWithIdEqual1Changed = new Mission();
-        missionWithIdEqual1Changed.setId(1);
-        missionWithoutProducts.setName("mission with id=1");
-        missionWithoutProducts.setImageryType(ImageryType.HYPERSPECTRAL);
-        missionWithoutProducts.setStartDate(LocalDateTime.now());
-        missionWithoutProducts.setFinishDate(LocalDateTime.now().plusHours(1L));
+        ProductFootprint footprint = new ProductFootprint();
+        footprint.setStartCoordinateLongitude(10.5);
+        footprint.setEndCoordinateLongitude(50.7);
+        footprint.setStartCoordinateLatitude(100.15);
+        footprint.setEndCoordinateLongitude(200.99);
 
-        footprint1 = new ProductFootprint();
-        footprint1.setStartCoordinateLongitude(10.5);
-        footprint1.setEndCoordinateLongitude(50.7);
-        footprint1.setStartCoordinateLatitude(100.15);
-        footprint1.setEndCoordinateLongitude(200.99);
-
-        product1 = new Product();
-        product1.setId(1L);
-        product1.setAcquisitionDate(LocalDateTime.now());
-        product1.setFootprint(footprint1);
-        product1.setPrice(new BigDecimal("10.5"));
-        product1.setUrl("http://com");
+        Product product = new Product();
+        product.setId(1L);
+        product.setAcquisitionDate(LocalDateTime.now());
+        product.setFootprint(footprint);
+        product.setPrice(new BigDecimal("10.5"));
+        product.setUrl("http://com");
 
         missionWithOneProduct = new Mission();
         missionWithOneProduct.setId(2L);
@@ -124,25 +95,22 @@ class MissionControllerTest {
         missionWithOneProduct.setImageryType(ImageryType.MULTISPECTRAL);
         missionWithOneProduct.setStartDate(LocalDateTime.now());
         missionWithOneProduct.setFinishDate(LocalDateTime.now().plusDays(1L));
-        missionWithOneProduct.addProduct(product1);
-        product1.setMission(missionWithOneProduct);
+        missionWithOneProduct.addProduct(product);
+        product.setMission(missionWithOneProduct);
 
-        nonEmptyListOfMissions.add(missionWithoutProducts);
+        nonEmptyListOfMissions.add(mission);
         nonEmptyListOfMissions.add(missionWithOneProduct);
     }
 
 //  ----------------------------------------------------------------------------------------------
 
     @Test
-    void getAllMissions_whenValidInput_thenReturns200_and_NonEmptyListOfMissions() throws Exception {
+    void getAllMissions_whenValidInput_thenReturns200AndNonEmptyListOfMissions() throws Exception {
 
         when(missionService.getAllMissions()).thenReturn(nonEmptyListOfMissions);
 
         MvcResult mvcResult = mockMvc.perform(get("/api/missions")
-               .contentType("application/json")
-//               below is alternative to use: @WithMockUser(username = "ContentManager", roles = {"CONTENT_MANAGER"})
-//               .header("Authorization", "Basic Q29udGVudE1hbmFnZXI6Y29udGVudG1hbmFnZXI=")
-        )
+               .contentType("application/json"))
                .andExpect(status().isOk())
                .andReturn();
 
@@ -152,24 +120,13 @@ class MissionControllerTest {
         assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
     }
 
-    @WithMockUser(roles = {"USER"})
     @Test
-    void getAllMissions_whenValidInput_and_userWithWrongRole_thenReturns403() throws Exception {
-        mockMvc.perform(get("/api/missions")
-                .contentType("application/json"))
-                .andExpect(status().isForbidden());
-    }
-
-    @Test
-    void getAllMissions_whenValidInput_thenReturns200_and_EmptyListOfMissions() throws Exception {
+    void getAllMissions_whenValidInput_thenReturns200AndEmptyListOfMissions() throws Exception {
 
         when(missionService.getAllMissions()).thenReturn(emptyListOfMissions);
 
         MvcResult mvcResult = mockMvc.perform(get("/api/missions")
-                        .contentType("application/json")
-//               below is alternative to use: @WithMockUser(username = "ContentManager", roles = {"CONTENT_MANAGER"})
-//               .header("Authorization", "Basic Q29udGVudE1hbmFnZXI6Y29udGVudG1hbmFnZXI=")
-        )
+                .contentType("application/json"))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -179,50 +136,65 @@ class MissionControllerTest {
         assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
     }
 
+    @WithMockUser(roles = "CUSTOMER")
     @Test
-    void getMissionById_whenValidInput_thenReturns200_and_Mission() throws Exception {
+    void getAllMissions_whenValidInputAndUserWithWrongRole_thenReturns403() throws Exception {
+        mockMvc.perform(get("/api/missions")
+                .contentType("application/json"))
+                .andExpect(status().isForbidden());
+    }
 
-        when(missionService.getMissionById(any(Long.class))).thenReturn(missionWithOneProduct);
+    @Test
+    void getMissionById_whenValidInput_thenReturns200AndMission() throws Exception {
+
+        when(missionService.getMissionById(any(Long.class))).thenReturn(mission);
 
         MvcResult mvcResult = mockMvc.perform(get("/api/missions/{id}", 1L)
-                        .contentType("application/json"))
+                .contentType("application/json"))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        String expectedResponseBody = objectMapper.writeValueAsString(missionWithOneProduct);
+        String expectedResponseBody = objectMapper.writeValueAsString(mission);
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
 
         assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
     }
 
     @Test
-    void getMissionById_whenIdOfNonExistingMission_thenReturns404() throws Exception {
+    void getMissionById_whenIdOfNonExistingMission_thenReturns404AndErrorResponse() throws Exception {
 
         when(missionService.getMissionById(any(Long.class))).thenReturn(null);
 
-        mockMvc.perform(get("/api/missions/{id}", 1L)
+        MvcResult mvcResult = mockMvc.perform(get("/api/missions/{id}", 1L)
                 .contentType("application/json"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andReturn();
+
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setStatus(HttpStatus.NOT_FOUND.value());
+        errorResponse.setMessage("There is no mission with id: " + 1);
+
+        String expectedResponseBody = objectMapper.writeValueAsString(errorResponse);
+        String actualResponseBody = mvcResult.getResponse().getContentAsString();
+
+        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
     }
 
 //  -----------------------------------------------------------------------------------------------
 
     @Test
-    void addMission_whenValidInput_thenReturns200_and_MissionWithNonZeroId() throws Exception {
+    void addMission_whenValidInput_thenReturns200AndMission() throws Exception {
 
-        when(missionService.saveMission(missionWithIdEqualZero)).thenReturn(missionWithIdNotEqualZero);
+        when(missionService.saveMission(any(Mission.class))).thenReturn(mission);
         when(missionService.isMissionNameUnique(any(String.class))).thenReturn(true);
-
-        assertThat(missionWithIdEqualZero.getId()).isEqualTo(0);
-        assertThat(missionWithIdNotEqualZero.getId()).isNotEqualTo(0);
 
         MvcResult mvcResult = mockMvc.perform(post("/api/missions")
                 .contentType("application/json")
-                .content(objectMapper.writeValueAsString(missionWithIdEqualZero)))
+                .content(objectMapper.writeValueAsString(mission)))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        String expectedResponseBody = objectMapper.writeValueAsString(missionWithIdNotEqualZero);
+        String expectedResponseBody = objectMapper.writeValueAsString(mission);
         String actualResponseBody =  mvcResult.getResponse().getContentAsString();
 
         assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
@@ -233,11 +205,9 @@ class MissionControllerTest {
 
         when(missionService.isMissionNameUnique(any(String.class))).thenReturn(false);
 
-        assertThat(missionWithIdEqualZero.getId()).isEqualTo(0);
-
         mockMvc.perform(post("/api/missions")
                 .contentType("application/json")
-                .content(objectMapper.writeValueAsString(missionWithIdEqualZero)))
+                .content(objectMapper.writeValueAsString(mission)))
                 .andExpect(status().isBadRequest());
     }
 
@@ -254,32 +224,67 @@ class MissionControllerTest {
 
 //  -----------------------------------------------------------------------------------------------
 
-//    @Test
-//    void updateMission_whenValidInput_thenReturns200_and_MissionWithNonZeroId() throws Exception {
-//
-//        when(missionService.getMissionById(missionWithIdEqual1Changed.getId())).thenReturn(missionWithIdEqual1);
-//        when(missionService.updateMission(missionWithIdEqual1Changed)).thenReturn(missionWithIdEqual1);
-//        when(missionService.isMissionNameUnique(any(String.class))).thenReturn(true);
-//
-//        assertThat(missionWithIdNotEqualZero.getId()).isNotEqualTo(0);
-//
-//        MvcResult mvcResult = mockMvc.perform(put("/api/missions")
-//                .contentType("application/json")
-//                .content(objectMapper.writeValueAsString(missionWithIdEqual1Changed)))
-//                .andExpect(status().isOk())
-//                .andReturn();
-//
-//        String expectedResponseBody = objectMapper.writeValueAsString(missionWithIdNotEqualZero);
-//        String actualResponseBody =  mvcResult.getResponse().getContentAsString();
-//
-//        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
-//    }
+    @Test
+    void updateMission_whenValidInput_thenReturns200AndMission() throws Exception {
+
+        when(missionService.getMissionById(any(Long.class))).thenReturn(mission);
+        when(missionService.updateMission(any(Mission.class))).thenReturn(mission);
+        when(missionService.isMissionNameUniqueForMissionsWithOtherIds(any(String.class), any(Long.class))).thenReturn(true);
+
+        MvcResult mvcResult = mockMvc.perform(put("/api/missions")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(mission)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String expectedResponseBody = objectMapper.writeValueAsString(mission);
+        String actualResponseBody =  mvcResult.getResponse().getContentAsString();
+
+        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
+    }
+
+    @Test
+    void updateMission_whenIdOfNonExistingMission_thenReturns404() throws Exception {
+
+        when(missionService.getMissionById(any(Long.class))).thenReturn(null);
+
+        mockMvc.perform(put("/api/missions")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(mission)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void updateMission_whenNotUniqueNewMissionName_thenReturns400() throws Exception {
+
+        when(missionService.getMissionById(any(Long.class))).thenReturn(mission);
+        when(missionService.isMissionNameUniqueForMissionsWithOtherIds(any(String.class), any(Long.class))).thenReturn(false);
+
+        mockMvc.perform(put("/api/missions")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(mission)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void updateMission_whenMissionFieldIsNull_thenReturns400() throws Exception {
+
+        when(missionService.getMissionById(any(Long.class))).thenReturn(mission);
+        when(missionService.isMissionNameUniqueForMissionsWithOtherIds(any(String.class), any(Long.class))).thenReturn(true);
+
+        assertThat(missionWithNullImageryTypeField.getImageryType()).isNull();
+
+        mockMvc.perform(put("/api/missions")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(missionWithNullImageryTypeField)))
+                .andExpect(status().isBadRequest());
+    }
 
 //  -----------------------------------------------------------------------------------------------
     @Test
     void deleteMissionById_whenIdOfMissionWithoutProducts_thenReturns200() throws Exception {
 
-        when(missionService.getMissionById(any(Long.class))).thenReturn(missionWithoutProducts);
+        when(missionService.getMissionById(any(Long.class))).thenReturn(mission);
 
         mockMvc.perform(delete("/api/missions/{id}", 1L))
                 .andExpect(status().isOk());
