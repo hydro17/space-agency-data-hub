@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.MockReset;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -201,25 +202,45 @@ class MissionControllerTest {
     }
 
     @Test
-    void addMission_whenNotUniqueMissionName_thenReturns400() throws Exception {
+    void addMission_whenNotUniqueMissionName_thenReturns400AndErrorResponse() throws Exception {
 
         when(missionService.isMissionNameUnique(any(String.class))).thenReturn(false);
 
-        mockMvc.perform(post("/api/missions")
+        MvcResult mvcResult = mockMvc.perform(post("/api/missions")
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(mission)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+        errorResponse.setMessage("There is already a mission with the name: " + mission.getName());
+
+        String expectedResponseBody = objectMapper.writeValueAsString(errorResponse);
+        String actualResponseBody = mvcResult.getResponse().getContentAsString();
+
+        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
     }
 
     @Test
-    void addMission_whenMissionFieldIsNull_thenReturns400() throws Exception {
+    void addMission_whenMissionFieldIsNull_thenReturns400AndErrorResponse() throws Exception {
 
         assertThat(missionWithNullImageryTypeField.getImageryType()).isNull();
 
-        mockMvc.perform(post("/api/missions")
+        MvcResult mvcResult = mockMvc.perform(post("/api/missions")
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(missionWithNullImageryTypeField)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+        errorResponse.setMessage("No Mission field can be null");
+
+        String expectedResponseBody = objectMapper.writeValueAsString(errorResponse);
+        String actualResponseBody = mvcResult.getResponse().getContentAsString();
+
+        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
     }
 
 //  -----------------------------------------------------------------------------------------------
@@ -244,40 +265,70 @@ class MissionControllerTest {
     }
 
     @Test
-    void updateMission_whenIdOfNonExistingMission_thenReturns404() throws Exception {
+    void updateMission_whenIdOfNonExistingMission_thenReturns404AndErrorResponse() throws Exception {
 
         when(missionService.getMissionById(any(Long.class))).thenReturn(null);
 
-        mockMvc.perform(put("/api/missions")
+        MvcResult mvcResult = mockMvc.perform(put("/api/missions")
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(mission)))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andReturn();
+
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setStatus(HttpStatus.NOT_FOUND.value());
+        errorResponse.setMessage("There is no mission with id: " + mission.getId());
+
+        String expectedResponseBody = objectMapper.writeValueAsString(errorResponse);
+        String actualResponseBody = mvcResult.getResponse().getContentAsString();
+
+        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
     }
 
     @Test
-    void updateMission_whenNotUniqueNewMissionName_thenReturns400() throws Exception {
+    void updateMission_whenNotUniqueNewMissionName_thenReturns400AndErrorResponse() throws Exception {
 
         when(missionService.getMissionById(any(Long.class))).thenReturn(mission);
         when(missionService.isMissionNameUniqueForMissionsWithOtherIds(any(String.class), any(Long.class))).thenReturn(false);
 
-        mockMvc.perform(put("/api/missions")
+        MvcResult mvcResult = mockMvc.perform(put("/api/missions")
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(mission)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+        errorResponse.setMessage("There is already a mission with the name: " + mission.getName());
+
+        String expectedResponseBody = objectMapper.writeValueAsString(errorResponse);
+        String actualResponseBody = mvcResult.getResponse().getContentAsString();
+
+        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
     }
 
     @Test
-    void updateMission_whenMissionFieldIsNull_thenReturns400() throws Exception {
+    void updateMission_whenMissionFieldIsNull_thenReturns400AndErrorResponse() throws Exception {
 
         when(missionService.getMissionById(any(Long.class))).thenReturn(mission);
         when(missionService.isMissionNameUniqueForMissionsWithOtherIds(any(String.class), any(Long.class))).thenReturn(true);
 
         assertThat(missionWithNullImageryTypeField.getImageryType()).isNull();
 
-        mockMvc.perform(put("/api/missions")
+        MvcResult mvcResult = mockMvc.perform(put("/api/missions")
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(missionWithNullImageryTypeField)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+        errorResponse.setMessage("No Mission field can be null");
+
+        String expectedResponseBody = objectMapper.writeValueAsString(errorResponse);
+        String actualResponseBody = mvcResult.getResponse().getContentAsString();
+
+        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
     }
 
 //  -----------------------------------------------------------------------------------------------
@@ -291,20 +342,44 @@ class MissionControllerTest {
     }
 
     @Test
-    void deleteMissionById_whenIdOfMissionWithProducts_thenReturns400() throws Exception {
+    void deleteMissionById_whenIdOfMissionWithProducts_thenReturns400AndErrorResposne() throws Exception {
 
+        long missionId = 1L;
         when(missionService.getMissionById(any(Long.class))).thenReturn(missionWithOneProduct);
 
-        mockMvc.perform(delete("/api/missions/{id}", 1L))
-                .andExpect(status().isBadRequest());
+        MvcResult mvcResult = mockMvc.perform(delete("/api/missions/{id}", missionId))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+        errorResponse.setMessage("Mission: " +  missionWithOneProduct.getName() + " with id: " + missionId
+                + " contains " + missionWithOneProduct.getProducts().size()
+                + " product(s). Only mission without products can be removed.");
+
+        String expectedResponseBody = objectMapper.writeValueAsString(errorResponse);
+        String actualResponseBody = mvcResult.getResponse().getContentAsString();
+
+        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
     }
 
     @Test
-    void deleteMissionById_whenIdOfNonExistingMission_thenReturns404() throws Exception {
+    void deleteMissionById_whenIdOfNonExistingMission_thenReturns404AndErrorResponse() throws Exception {
 
+        long missionId = 1L;
         when(missionService.getMissionById(any(Long.class))).thenReturn(null);
 
-        mockMvc.perform(delete("/api/missions/{id}", 1L))
-                .andExpect(status().isNotFound());
+        MvcResult mvcResult = mockMvc.perform(delete("/api/missions/{id}", missionId))
+                .andExpect(status().isNotFound())
+                .andReturn();
+
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setStatus(HttpStatus.NOT_FOUND.value());
+        errorResponse.setMessage("There is no mission with id: " + missionId);
+
+        String expectedResponseBody = objectMapper.writeValueAsString(errorResponse);
+        String actualResponseBody = mvcResult.getResponse().getContentAsString();
+
+        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
     }
 }

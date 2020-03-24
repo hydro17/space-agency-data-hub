@@ -42,7 +42,7 @@ public class MissionController {
     public Mission addMission(@Valid @RequestBody Mission mission, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
-            throw new MissionNullFieldException("One of the fields of the Mission object is null");
+            throw new MissionNullFieldException("No Mission field can be null");
         }
 
         if (missionService.isMissionNameUnique(mission.getName()) == false) {
@@ -65,7 +65,7 @@ public class MissionController {
         }
 
         if (bindingResult.hasErrors()) {
-            throw new MissionNullFieldException("One of fields of the Mission object is null");
+            throw new MissionNullFieldException("No Mission field can be null");
         }
 
         Mission updatedMission = missionService.updateMission(mission);
