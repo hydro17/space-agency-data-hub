@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -146,7 +147,7 @@ class MissionControllerTest {
     @Test
     void getMissionById_whenValidInput_thenReturns200AndMission() throws Exception {
 
-        when(missionService.getMissionById(any(Long.class))).thenReturn(mission);
+        when(missionService.getMissionById(any(Long.class))).thenReturn(Optional.ofNullable(mission));
 
         MvcResult mvcResult = mockMvc.perform(get("/api/missions/{id}", 1L)
                 .contentType("application/json"))
@@ -160,9 +161,9 @@ class MissionControllerTest {
     }
 
     @Test
-    void getMissionById_whenIdOfNonExistingMission_thenReturns404AndErrorResponse() throws Exception {
+    void getMissionById_whenIdOfNonExistentMission_thenReturns404AndErrorResponse() throws Exception {
 
-        when(missionService.getMissionById(any(Long.class))).thenReturn(null);
+        when(missionService.getMissionById(any(Long.class))).thenReturn(Optional.empty());
 
         MvcResult mvcResult = mockMvc.perform(get("/api/missions/{id}", 1L)
                 .contentType("application/json"))
@@ -246,7 +247,7 @@ class MissionControllerTest {
     @Test
     void updateMission_whenValidInput_thenReturns200AndMission() throws Exception {
 
-        when(missionService.getMissionById(any(Long.class))).thenReturn(mission);
+        when(missionService.getMissionById(any(Long.class))).thenReturn(Optional.ofNullable(mission));
         when(missionService.updateMission(any(Mission.class))).thenReturn(mission);
         when(missionService.isMissionNameUniqueForMissionsWithOtherIds(any(String.class), any(Long.class))).thenReturn(true);
 
@@ -265,7 +266,7 @@ class MissionControllerTest {
     @Test
     void updateMission_whenIdOfNonExistingMission_thenReturns404AndErrorResponse() throws Exception {
 
-        when(missionService.getMissionById(any(Long.class))).thenReturn(null);
+        when(missionService.getMissionById(any(Long.class))).thenReturn(Optional.empty());
 
         MvcResult mvcResult = mockMvc.perform(put("/api/missions")
                 .contentType("application/json")
@@ -286,7 +287,7 @@ class MissionControllerTest {
     @Test
     void updateMission_whenNotUniqueNewMissionName_thenReturns400AndErrorResponse() throws Exception {
 
-        when(missionService.getMissionById(any(Long.class))).thenReturn(mission);
+        when(missionService.getMissionById(any(Long.class))).thenReturn(Optional.ofNullable(mission));
         when(missionService.isMissionNameUniqueForMissionsWithOtherIds(any(String.class), any(Long.class))).thenReturn(false);
 
         MvcResult mvcResult = mockMvc.perform(put("/api/missions")
@@ -308,7 +309,7 @@ class MissionControllerTest {
     @Test
     void updateMission_whenMissionFieldIsNull_thenReturns400AndErrorResponse() throws Exception {
 
-        when(missionService.getMissionById(any(Long.class))).thenReturn(mission);
+        when(missionService.getMissionById(any(Long.class))).thenReturn(Optional.ofNullable(mission));
         when(missionService.isMissionNameUniqueForMissionsWithOtherIds(any(String.class), any(Long.class))).thenReturn(true);
 
         assertThat(missionWithNullImageryTypeField.getImageryType()).isNull();
@@ -333,7 +334,7 @@ class MissionControllerTest {
     @Test
     void deleteMissionById_whenIdOfMissionWithoutProducts_thenReturns200() throws Exception {
 
-        when(missionService.getMissionById(any(Long.class))).thenReturn(mission);
+        when(missionService.getMissionById(any(Long.class))).thenReturn(Optional.ofNullable(mission));
 
         mockMvc.perform(delete("/api/missions/{id}", 1L))
                 .andExpect(status().isOk());
@@ -343,7 +344,7 @@ class MissionControllerTest {
     void deleteMissionById_whenIdOfMissionWithProducts_thenReturns400AndErrorResposne() throws Exception {
 
         long missionId = 1L;
-        when(missionService.getMissionById(any(Long.class))).thenReturn(missionWithOneProduct);
+        when(missionService.getMissionById(any(Long.class))).thenReturn(Optional.ofNullable(missionWithOneProduct));
 
         MvcResult mvcResult = mockMvc.perform(delete("/api/missions/{id}", missionId))
                 .andExpect(status().isBadRequest())
@@ -365,7 +366,7 @@ class MissionControllerTest {
     void deleteMissionById_whenIdOfNonExistingMission_thenReturns404AndErrorResponse() throws Exception {
 
         long missionId = 1L;
-        when(missionService.getMissionById(any(Long.class))).thenReturn(null);
+        when(missionService.getMissionById(any(Long.class))).thenReturn(Optional.empty());
 
         MvcResult mvcResult = mockMvc.perform(delete("/api/missions/{id}", missionId))
                 .andExpect(status().isNotFound())
