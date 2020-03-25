@@ -47,13 +47,14 @@ public class ProductController {
     }
 
     @GetMapping("/find")
-    public List<Product> findProduct(@RequestParam(required = false) String missionName,
-                            @RequestParam(required = false) ImageryType imageryType,
-                            @RequestParam(required = false) Double latitude,
-                            @RequestParam(required = false) Double longitude,
-                            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime beforeDate,
-                            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime afterDate) {
-
+    public List<Product> findProduct(
+            @RequestParam(required = false) String missionName,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime beforeDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime afterDate,
+            @RequestParam(required = false) Double latitude,
+            @RequestParam(required = false) Double longitude,
+            @RequestParam(required = false) ImageryType imageryType
+    ) {
         List<Product> products = productService.getFilteredProducts(missionName, beforeDate, afterDate, latitude, longitude, imageryType);
         return productService.removeUrlOfUnorderedProducts(products);
     }
@@ -71,11 +72,11 @@ public class ProductController {
     public Product addProduct(@Valid @RequestBody ProductDTO productDTO, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
-            throw new ProductNullFieldException("One of fields of the Product object is null");
+            throw new ProductNullFieldException("No product field can be null");
         }
 
         if (productService.doesMissionExist(productDTO.getMissionName()) == false) {
-            throw new MissionNotFoundException("There is no mission with name: " + productDTO.getMissionName());
+            throw new MissionNotFoundException("There is no product with name: " + productDTO.getMissionName());
         }
 
         Product productWithSetId = productService.saveProduct(productService.convertProductDTOToProduct(productDTO));

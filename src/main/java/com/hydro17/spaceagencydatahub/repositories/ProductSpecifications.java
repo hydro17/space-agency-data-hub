@@ -62,14 +62,14 @@ public final class ProductSpecifications {
                                         .and(afterDate == null ? null : afterDate(afterDate))
                         :
 //                      if only one date is given then:
-//                          - if given date is beforeDate we get products before this date
-//                          - if given date is afterDate we get products after this date
+//                          - if given date is beforeDate, we get products before this date
+//                          - if given date is afterDate, we get products after this date
                         Specification
                                 .where(beforeDate == null ? null : beforeDate(beforeDate))
                                 .or(afterDate == null ? null : afterDate(afterDate))
                 )
                 .and(
-//                      only if both longitude and altitude are given use them in filtering
+//                      only if both longitude and latitude are given, use them in filtering
                         latitude == null || longitude == null ? null
                                 :
                                 Specification
