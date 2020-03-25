@@ -21,9 +21,8 @@ public class MissionService {
         return missionRepository.findAll();
     }
 
-    public Mission getMissionById(long id) {
-        Optional<Mission> mission =  missionRepository.findById(id);
-        return mission.orElse(null);
+    public Optional<Mission> getMissionById(long id) {
+        return missionRepository.findById(id);
     }
 
     public Optional<Mission> getMissionByName(String missionName) {

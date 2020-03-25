@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/missions")
@@ -29,13 +30,8 @@ public class MissionController {
 
     @GetMapping("/{id}")
     public Mission getMissionById(@PathVariable long id) {
-        Mission mission = missionService.getMissionById(id);
-
-        if (mission == null) {
-            throw new MissionNotFoundException("There is no mission with id: " + id);
-        }
-
-        return mission;
+        Optional<Mission> missionOptional = missionService.getMissionById(id);
+        return missionOptional.orElseThrow(() -> new MissionNotFoundException("There is no mission with id: " + id));
     }
 
     @PostMapping
@@ -56,7 +52,7 @@ public class MissionController {
     @PutMapping
     public Mission updateMission(@Valid @RequestBody Mission mission, BindingResult bindingResult) {
 
-        if (missionService.getMissionById(mission.getId()) == null) {
+        if (missionService.getMissionById(mission.getId()).isPresent() == false) {
             throw new MissionNotFoundException("There is no mission with id: " + mission.getId());
         }
 
@@ -74,11 +70,12 @@ public class MissionController {
 
     @DeleteMapping("/{id}")
     public void deleteMissionById(@PathVariable long id) {
-        Mission mission = missionService.getMissionById(id);
+        Mission mission = missionService.getMissionById(id)
+                .orElseThrow(() -> new MissionNotFoundException("There is no mission with id: " + id));
 
-        if (mission == null) {
-            throw new MissionNotFoundException("There is no mission with id: " + id);
-        }
+//        if (mission == null) {
+//            throw new MissionNotFoundException("There is no mission with id: " + id);
+//        }
 
         if (mission.getProducts().size() > 0) {
             throw new MissionProductExistsException("Mission: " +  mission.getName() + " with id: " + id
