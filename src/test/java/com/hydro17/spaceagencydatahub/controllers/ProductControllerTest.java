@@ -68,7 +68,6 @@ class ProductControllerTest {
     private List<IProductAndOrderCount> notEmptyListOfProductAndOrderCounts;
 
     private Product product1;
-    private Product product2;
     private ProductDTO productDTO;
     private ProductDTO productDTOWithNullPriceField;
 
@@ -96,20 +95,10 @@ class ProductControllerTest {
         product1.setMission(mission);
         mission.addProduct(product1);
 
-        product2 = new Product();
-        product2.setId(2L);
-        product2.setAcquisitionDate(LocalDateTime.now().plusHours(1L));
-        product2.setFootprint(footprint);
-        product2.setPrice(new BigDecimal("15.5"));
-        product2.setUrl("http://com2");
-        product2.setMission(mission);
-        mission.addProduct(product2);
-
         emptyListOfProducts = new ArrayList<>();
         nonEmptyListOfProducts = new ArrayList<>();
 
         nonEmptyListOfProducts.add(product1);
-        nonEmptyListOfProducts.add(product2);
 
         productDTO = new ProductDTO();
         productDTO.setId(0);

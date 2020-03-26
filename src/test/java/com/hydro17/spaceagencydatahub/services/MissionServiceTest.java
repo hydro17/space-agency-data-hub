@@ -24,22 +24,20 @@ import static org.mockito.Mockito.*;
 @SpringBootTest(classes = MissionService.class)
 class MissionServiceTest {
 
-    @MockBean
-    private MissionRepository missionRepository;
-
     @Autowired
     private MissionService missionService;
+
+    @MockBean
+    private MissionRepository missionRepository;
 
     private List<Mission> emptyListOfMissions;
     private List<Mission> nonEmptyListOfMissions;
 
-    private Mission missionWithOneProduct;
     private Mission mission;
 
     @BeforeEach
     void init() {
         emptyListOfMissions = new ArrayList<>();
-        nonEmptyListOfMissions = new ArrayList<>();
 
         mission = new Mission();
         mission.setId(1L);
@@ -61,7 +59,7 @@ class MissionServiceTest {
         product.setPrice(new BigDecimal("10.5"));
         product.setUrl("http://com");
 
-        missionWithOneProduct = new Mission();
+        Mission missionWithOneProduct = new Mission();
         missionWithOneProduct.setId(2L);
         missionWithOneProduct.setName("mission3");
         missionWithOneProduct.setImageryType(ImageryType.MULTISPECTRAL);
@@ -70,6 +68,7 @@ class MissionServiceTest {
         missionWithOneProduct.addProduct(product);
         product.setMission(missionWithOneProduct);
 
+        nonEmptyListOfMissions = new ArrayList<>();
         nonEmptyListOfMissions.add(mission);
         nonEmptyListOfMissions.add(missionWithOneProduct);
     }
