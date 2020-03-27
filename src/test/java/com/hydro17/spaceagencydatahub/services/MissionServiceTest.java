@@ -36,7 +36,7 @@ class MissionServiceTest {
     private Mission mission;
 
     @BeforeEach
-    void init() {
+    void setUp() {
         emptyListOfMissions = new ArrayList<>();
 
         mission = new Mission();

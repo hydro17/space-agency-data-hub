@@ -3,10 +3,7 @@ package com.hydro17.spaceagencydatahub.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hydro17.spaceagencydatahub.exceptions.ErrorResponse;
 import com.hydro17.spaceagencydatahub.models.*;
-import com.hydro17.spaceagencydatahub.services.MissionService;
-import com.hydro17.spaceagencydatahub.services.OrderItemService;
-import com.hydro17.spaceagencydatahub.services.ProductOrderService;
-import com.hydro17.spaceagencydatahub.services.ProductService;
+import com.hydro17.spaceagencydatahub.services.*;
 import com.hydro17.spaceagencydatahub.utils.ImageryType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -37,7 +34,7 @@ class ProductControllerTest {
 
     @Getter
     @AllArgsConstructor
-    private class ProductAndOrderCount implements IProductAndOrderCount {
+    private static class ProductAndOrderCount implements IProductAndOrderCount {
         private Product product;
         private Long orderCount;
     }

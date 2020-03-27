@@ -3,10 +3,10 @@ package com.hydro17.spaceagencydatahub.services;
 import com.hydro17.spaceagencydatahub.models.Mission;
 import com.hydro17.spaceagencydatahub.models.Product;
 import com.hydro17.spaceagencydatahub.models.ProductDTO;
-import com.hydro17.spaceagencydatahub.repositories.MissionRepository;
 import com.hydro17.spaceagencydatahub.repositories.ProductRepository;
 import com.hydro17.spaceagencydatahub.repositories.ProductSpecifications;
 import com.hydro17.spaceagencydatahub.utils.ImageryType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,9 +20,14 @@ public class ProductService {
     private MissionService missionService;
     private ProductOrderService productOrderService;
 
-    public ProductService(ProductRepository productRepository, MissionService missionService, ProductOrderService productOrderService) {
+    public ProductService(ProductRepository productRepository, MissionService missionService) {
         this.productRepository = productRepository;
         this.missionService = missionService;
+    }
+
+    //  To avoid circular dependency
+    @Autowired
+    public void setProductOrderService(ProductOrderService productOrderService) {
         this.productOrderService = productOrderService;
     }
 
@@ -73,7 +78,7 @@ public class ProductService {
     public List<Product> removeUrlOfUnorderedProducts(List<Product> products) {
 
             products.forEach(product -> {
-                if (productOrderService.isOrderedProductWithGivenId(product.getId()) == false) {
+                if (productOrderService.isOrderedProductById(product.getId()) == false) {
                     product.setUrl(null);
                 }
             });

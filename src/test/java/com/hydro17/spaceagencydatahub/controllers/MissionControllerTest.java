@@ -59,7 +59,7 @@ class MissionControllerTest {
     private Mission mission;
 
     @BeforeEach
-    void init() {
+    void setUp() {
         emptyListOfMissions = new ArrayList<>();
         nonEmptyListOfMissions = new ArrayList<>();
 

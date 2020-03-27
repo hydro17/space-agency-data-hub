@@ -46,7 +46,7 @@ class ProductServiceTest {
     ProductDTO productDTO;
 
     @BeforeEach
-    void init() {
+    void setUp() {
         emptyListOfProducts = new ArrayList<>();
 
         mission = new Mission();
@@ -188,7 +188,7 @@ class ProductServiceTest {
 
     @Test
     void removeUrlOfUnorderedProducts_whenProductOrdered_thenDoNotRemoveUrl() {
-        when(productOrderService.isOrderedProductWithGivenId(anyLong())).thenReturn(true);
+        when(productOrderService.isOrderedProductById(anyLong())).thenReturn(true);
 
         List<Product> actualOutput = productService.removeUrlOfUnorderedProducts(nonEmptyListOfProducts);
 
@@ -197,7 +197,7 @@ class ProductServiceTest {
 
     @Test
     void removeUrlOfUnorderedProducts_whenProductIsNotOrdered_thenRemoveUrl() {
-        when(productOrderService.isOrderedProductWithGivenId(anyLong())).thenReturn(false);
+        when(productOrderService.isOrderedProductById(anyLong())).thenReturn(false);
 
         List<Product> actualOutput = productService.removeUrlOfUnorderedProducts(nonEmptyListOfProducts);
 
