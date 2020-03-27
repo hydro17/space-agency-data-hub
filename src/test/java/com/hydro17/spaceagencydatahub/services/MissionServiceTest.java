@@ -163,7 +163,7 @@ class MissionServiceTest {
     }
 
     @Test
-    void isMissionNameUniqueForMissionsWithOtherIds__whenMissionNameNotUnique_thenReturnsFalse() {
+    void isMissionNameUniqueForMissionsWithOtherIds_whenMissionNameNotUnique_thenReturnsFalse() {
         when(missionRepository.findByNameAndNotEqualId(anyString(), anyLong())).thenReturn(Optional.ofNullable(mission));
 
         Boolean actualOutput = missionService.isMissionNameUniqueForMissionsWithOtherIds(anyString(), anyLong());

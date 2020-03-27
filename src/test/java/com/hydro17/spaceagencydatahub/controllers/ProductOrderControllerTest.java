@@ -1,6 +1,7 @@
 package com.hydro17.spaceagencydatahub.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hydro17.spaceagencydatahub.exceptions.ErrorResponse;
 import com.hydro17.spaceagencydatahub.models.*;
 import com.hydro17.spaceagencydatahub.services.MissionService;
 import com.hydro17.spaceagencydatahub.services.ProductOrderService;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -50,7 +52,8 @@ class ProductOrderControllerTest {
     private List<ProductOrder> nonEmptyProductOrderList;
 
     private ProductOrder productOrder;
-    private ProductOrderDTO productOrderDTO;
+    private ProductOrderDTO nonEmptyProductOrderDTO;
+    private ProductOrderDTO emptyProductOrderDTO;
 
     @BeforeEach
     void setUp() {
@@ -84,8 +87,10 @@ class ProductOrderControllerTest {
         nonEmptyProductOrderList = new ArrayList<>();
         nonEmptyProductOrderList.add(productOrder);
 
-        productOrderDTO = new ProductOrderDTO();
-        productOrderDTO.setProductIds(Arrays.asList(1L, 2L, 3L));
+        nonEmptyProductOrderDTO = new ProductOrderDTO();
+        nonEmptyProductOrderDTO.setProductIds(Arrays.asList(1L, 2L, 3L));
+
+        emptyProductOrderDTO = new ProductOrderDTO();
     }
 
     @Test
@@ -106,19 +111,38 @@ class ProductOrderControllerTest {
     @Test
     void addOrder_whenValidInput_thenReturns200AndProductOrder() throws Exception {
 
-        when(productOrderService.convertProductOrderDTOToProductOrder(productOrderDTO)).thenReturn(productOrder);
+        when(productOrderService.convertProductOrderDTOToProductOrder(nonEmptyProductOrderDTO)).thenReturn(productOrder);
         when(productOrderService.saveProductOrder(productOrder)).thenReturn(productOrder);
 
         MvcResult mvcResult = mockMvc.perform(post("/api/orders")
                 .contentType("application/json")
-                .content(objectMapper.writeValueAsString(productOrderDTO)))
+                .content(objectMapper.writeValueAsString(nonEmptyProductOrderDTO)))
                 .andExpect(status().isOk())
                 .andReturn();
 
         String expectedResponseBody = objectMapper.writeValueAsString(productOrder);
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
 
-        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(actualResponseBody);
+        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
+    }
+
+    @Test
+    void addOrder_whenEmptyProductOrderDTO_thenReturns400() throws Exception {
+
+        MvcResult mvcResult = mockMvc.perform(post("/api/orders")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(emptyProductOrderDTO)))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+        errorResponse.setMessage("Order is empty. Order has to contain at least one product.");
+
+        String expectedResponseBody = objectMapper.writeValueAsString(errorResponse);
+        String actualResponseBody = mvcResult.getResponse().getContentAsString();
+
+        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
     }
 
     @WithMockUser(roles = "CONTENT_MANAGER")
@@ -127,7 +151,7 @@ class ProductOrderControllerTest {
 
         mockMvc.perform(post("/api/orders")
                 .contentType("application/json")
-                .content(objectMapper.writeValueAsString(productOrderDTO)))
+                .content(objectMapper.writeValueAsString(nonEmptyProductOrderDTO)))
                 .andExpect(status().isForbidden());
     }
 }
