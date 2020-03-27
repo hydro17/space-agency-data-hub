@@ -2,6 +2,7 @@ package com.hydro17.spaceagencydatahub.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
@@ -30,10 +31,15 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
-//    @ExceptionHandler
-//    public void handleExceptions(HttpMessageNotReadableException ex) {
-//        throw new MissionNullFieldException("Bad data");
-//    }
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handleExceptions(HttpMessageNotReadableException ex) {
+
+        ErrorResponse error = new ErrorResponse();
+        error.setStatus(HttpStatus.BAD_REQUEST.value());
+        error.setMessage("Incorrect input data");
+
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
 
 //    @ExceptionHandler
 //    public ResponseEntity<String> handleAllExceptions(Exception ex, WebRequest request) {
