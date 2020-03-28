@@ -62,7 +62,7 @@ public class ProductService {
     public Product convertProductDTOToProduct(ProductDTO productDTO) {
         Product product = new Product();
 
-        product.setId(productDTO.getId());
+        product.setId(0);
         product.setAcquisitionDate(productDTO.getAcquisitionDate());
         product.setFootprint(productDTO.getFootprint());
         product.setPrice(productDTO.getPrice());

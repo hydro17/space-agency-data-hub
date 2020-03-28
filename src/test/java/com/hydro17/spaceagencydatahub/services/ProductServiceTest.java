@@ -75,7 +75,6 @@ class ProductServiceTest {
         nonEmptyListOfProducts.add(product);
 
         productDTO = new ProductDTO();
-        productDTO.setId(1L);
         productDTO.setMissionName("mission1");
         productDTO.setAcquisitionDate(LocalDateTime.now());
         productDTO.setPrice(new BigDecimal("10.7"));
@@ -178,7 +177,7 @@ class ProductServiceTest {
 
         Product actualOutput = productService.convertProductDTOToProduct(productDTO);
 
-        assertThat(actualOutput.getId()).isEqualTo(productDTO.getId());
+        assertThat(actualOutput.getId()).isZero();
         assertThat(actualOutput.getMission().getName()).isEqualTo(productDTO.getMissionName());
         assertThat(actualOutput.getAcquisitionDate()).isEqualTo(productDTO.getAcquisitionDate());
         assertThat(actualOutput.getFootprint()).isEqualTo(productDTO.getFootprint());
