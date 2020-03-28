@@ -1,12 +1,14 @@
 package com.hydro17.spaceagencydatahub.controllers;
 
 import com.hydro17.spaceagencydatahub.exceptions.MissionNotFoundException;
+import com.hydro17.spaceagencydatahub.exceptions.ProductIsOrderedException;
 import com.hydro17.spaceagencydatahub.exceptions.ProductNotFoundException;
 import com.hydro17.spaceagencydatahub.exceptions.ProductNullFieldException;
 import com.hydro17.spaceagencydatahub.models.IProductAndOrderCount;
 import com.hydro17.spaceagencydatahub.models.Product;
 import com.hydro17.spaceagencydatahub.models.ProductDTO;
 import com.hydro17.spaceagencydatahub.services.OrderItemService;
+import com.hydro17.spaceagencydatahub.services.ProductOrderService;
 import com.hydro17.spaceagencydatahub.services.ProductService;
 import com.hydro17.spaceagencydatahub.utils.ImageryType;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -23,10 +25,13 @@ public class ProductController {
 
     private ProductService productService;
     private OrderItemService orderItemService;
+    private ProductOrderService productOrderService;
 
-    public ProductController(ProductService productService, OrderItemService orderItemService) {
+    public ProductController(ProductService productService, OrderItemService orderItemService,
+                             ProductOrderService productOrderService) {
         this.productService = productService;
         this.orderItemService = orderItemService;
+        this.productOrderService = productOrderService;
     }
 
     @GetMapping
@@ -87,6 +92,10 @@ public class ProductController {
 
         if (productService.getProductById(id) == null) {
             throw new ProductNotFoundException("There is no product with id:" + id);
+        }
+
+        if (productOrderService.isOrderedProductById(id)) {
+            throw new ProductIsOrderedException("Product with id " + id + " is ordered and can't be removed");
         }
 
         productService.deleteProductById(id);

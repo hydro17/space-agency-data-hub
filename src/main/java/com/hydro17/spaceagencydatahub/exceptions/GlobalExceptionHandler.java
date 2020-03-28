@@ -5,7 +5,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.context.request.WebRequest;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -21,7 +20,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({MissionNameNotUniqueException.class, MissionProductExistsException.class,
-            MissionNullFieldException.class, ProductNullFieldException.class, ProductOrderNoOrderItemsException.class})
+            MissionNullFieldException.class, ProductNullFieldException.class, ProductOrderNoOrderItemsException.class,
+            ProductIsOrderedException.class})
     public ResponseEntity<ErrorResponse> handleBadRequestException(RuntimeException ex) {
 
         ErrorResponse error = new ErrorResponse();
