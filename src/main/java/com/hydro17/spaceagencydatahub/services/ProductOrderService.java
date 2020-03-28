@@ -28,7 +28,7 @@ public class ProductOrderService {
     }
 
     public List<ProductOrder> getAllProductOrdersOrderedByPlacedOnDesc() {
-        return productOrderRepository.findAllOrdersByPlacedOnDesc();
+        return productOrderRepository.findAllOrdersOrderedByPlacedOnDesc();
     }
 
     public ProductOrder saveProductOrder(ProductOrder productOrder) {

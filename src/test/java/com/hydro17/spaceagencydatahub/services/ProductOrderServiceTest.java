@@ -78,7 +78,7 @@ class ProductOrderServiceTest {
 
     @Test
     void getAllProductOrdersOrderedByPlacedOnDesc_whenValidInput_thenReturnsNonEmptyProductOrderList() {
-        when(productOrderRepository.findAllOrdersByPlacedOnDesc()).thenReturn(nonEmptyProductOrderList);
+        when(productOrderRepository.findAllOrdersOrderedByPlacedOnDesc()).thenReturn(nonEmptyProductOrderList);
 
         List<ProductOrder> actualOutput = productOrderService.getAllProductOrdersOrderedByPlacedOnDesc();
 

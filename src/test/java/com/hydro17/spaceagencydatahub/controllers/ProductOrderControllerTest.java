@@ -58,7 +58,6 @@ class ProductOrderControllerTest {
     @BeforeEach
     void setUp() {
         Mission mission = new Mission();
-        mission.setId(1L);
         mission.setName("mission");
         mission.setImageryType(ImageryType.HYPERSPECTRAL);
         mission.setStartDate(LocalDateTime.now());
@@ -71,7 +70,6 @@ class ProductOrderControllerTest {
         footprint.setEndCoordinateLongitude(200.99);
 
         Product product = new Product();
-        product.setId(1L);
         product.setAcquisitionDate(LocalDateTime.now());
         product.setFootprint(footprint);
         product.setPrice(new BigDecimal("10.5"));
@@ -80,7 +78,6 @@ class ProductOrderControllerTest {
         mission.addProduct(product);
 
         productOrder = new ProductOrder();
-        productOrder.setId(1L);
         productOrder.setPlacedOn(LocalDateTime.now());
         productOrder.addProduct(product);
 

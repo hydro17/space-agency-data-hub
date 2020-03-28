@@ -61,17 +61,14 @@ class MissionControllerTest {
     @BeforeEach
     void setUp() {
         emptyListOfMissions = new ArrayList<>();
-        nonEmptyListOfMissions = new ArrayList<>();
 
         missionWithNullImageryTypeField = new Mission();
-        missionWithNullImageryTypeField.setId(1L);
         missionWithNullImageryTypeField.setName("mission without imagery type");
         missionWithNullImageryTypeField.setStartDate(LocalDateTime.now());
         missionWithNullImageryTypeField.setFinishDate(LocalDateTime.now().plusHours(1L));
 
         mission = new Mission();
-        mission.setId(1L);
-        mission.setName("mission no prodducts, no nulll fields");
+        mission.setName("mission1");
         mission.setImageryType(ImageryType.HYPERSPECTRAL);
         mission.setStartDate(LocalDateTime.now());
         mission.setFinishDate(LocalDateTime.now().plusHours(1L));
@@ -83,14 +80,12 @@ class MissionControllerTest {
         footprint.setEndCoordinateLongitude(200.99);
 
         Product product = new Product();
-        product.setId(1L);
         product.setAcquisitionDate(LocalDateTime.now());
         product.setFootprint(footprint);
         product.setPrice(new BigDecimal("10.5"));
         product.setUrl("http://com");
 
         missionWithOneProduct = new Mission();
-        missionWithOneProduct.setId(2L);
         missionWithOneProduct.setName("mission3");
         missionWithOneProduct.setImageryType(ImageryType.MULTISPECTRAL);
         missionWithOneProduct.setStartDate(LocalDateTime.now());
@@ -98,6 +93,7 @@ class MissionControllerTest {
         missionWithOneProduct.addProduct(product);
         product.setMission(missionWithOneProduct);
 
+        nonEmptyListOfMissions = new ArrayList<>();
         nonEmptyListOfMissions.add(mission);
         nonEmptyListOfMissions.add(missionWithOneProduct);
     }
