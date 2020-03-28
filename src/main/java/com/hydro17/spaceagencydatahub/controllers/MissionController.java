@@ -45,6 +45,8 @@ public class MissionController {
             throw new MissionNameNotUniqueException("There is already a mission with the name: " + mission.getName());
         }
 
+        mission.setId(0);
+
         Mission missionWithSetId = missionService.saveMission(mission);
         return missionWithSetId;
     }
@@ -72,10 +74,6 @@ public class MissionController {
     public void deleteMissionById(@PathVariable long id) {
         Mission mission = missionService.getMissionById(id)
                 .orElseThrow(() -> new MissionNotFoundException("There is no mission with id: " + id));
-
-//        if (mission == null) {
-//            throw new MissionNotFoundException("There is no mission with id: " + id);
-//        }
 
         if (mission.getProducts().size() > 0) {
             throw new MissionProductExistsException("Mission: " +  mission.getName() + " with id: " + id

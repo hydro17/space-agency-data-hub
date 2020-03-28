@@ -12,9 +12,9 @@ import java.util.List;
 @Repository
 public interface ProductOrderRepository extends JpaRepository<ProductOrder, Long> {
 
-    @Query("SELECT po FROM ProductOrder po ORDER BY po.placedOn DESC")
+    @Query("SELECT po FROM ProductOrder po JOIN FETCH po.orderItems ORDER BY po.placedOn DESC")
     List<ProductOrder> findAllOrdersByPlacedOnDesc();
 
-    @Query("SELECT po FROM ProductOrder po JOIN FETCH po.orderItems oi JOIN FETCH oi.product p WHERE p.id = :id")
+    @Query("SELECT po FROM ProductOrder po JOIN po.orderItems oi JOIN oi.product p WHERE p.id = :id")
     List<ProductOrder> findAllProductOrdersContainingProductWithGivenId(@Param("id") long id);
 }

@@ -46,7 +46,7 @@ public class MissionService {
 
     @Transactional
     public Mission updateMission(Mission missionChanged) {
-//      In controller is checked that the mission with the given id exists so we can use get on this optional
+//      Controller already checked that the mission with the given id exists so we can use get on this optional
         Mission mission = missionRepository.findById(missionChanged.getId()).get();
 
         mission.setName(missionChanged.getName());

@@ -51,13 +51,12 @@ class ProductControllerTest {
     @MockBean
     private OrderItemService orderItemService;
 
-    // Added due to CommandLineRunner in the class SpaceAgencyDataHubApplication
     @MockBean
-    private MissionService missionService;
+    private ProductOrderService productOrderService;
 
     // Added due to CommandLineRunner in the class SpaceAgencyDataHubApplication
     @MockBean
-    private ProductOrderService productOrderService;
+    private MissionService missionService;
 
     private List<Product> emptyListOfProducts;
     private List<Product> nonEmptyListOfProducts;
@@ -98,7 +97,6 @@ class ProductControllerTest {
         nonEmptyListOfProducts.add(product1);
 
         productDTO = new ProductDTO();
-        productDTO.setId(0);
         productDTO.setMissionName("mission1");
         productDTO.setAcquisitionDate(LocalDateTime.now());
         productDTO.setFootprint(footprint);
@@ -106,7 +104,6 @@ class ProductControllerTest {
         productDTO.setUrl("http://com1");
 
         productDTOWithNullPriceField = new ProductDTO();
-        productDTO.setId(0);
         productDTO.setMissionName("mission1");
         productDTO.setAcquisitionDate(LocalDateTime.now());
         productDTO.setFootprint(footprint);
@@ -361,14 +358,16 @@ class ProductControllerTest {
     @Test
     void deleteProductById_whenValidInput_thenReturns200() throws Exception {
 
+        long productId = 1L;
         when(productService.getProductById(any(Long.class))).thenReturn(product1);
+        when(productOrderService.isOrderedProductById(productId)).thenReturn(false);
 
-        mockMvc.perform(delete("/api/products/{id}", 1L))
+        mockMvc.perform(delete("/api/products/{id}", productId))
                 .andExpect(status().isOk());
     }
 
     @Test
-    void deleteProductById_whenMissionDoesNotExist_thenReturns404AndErrorResponse() throws Exception {
+    void deleteProductById_whenProductDoesNotExist_thenReturns404AndErrorResponse() throws Exception {
 
         long productId = 1L;
         when(productService.getProductById(any(Long.class))).thenReturn(null);
@@ -380,6 +379,27 @@ class ProductControllerTest {
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setStatus(HttpStatus.NOT_FOUND.value());
         errorResponse.setMessage("There is no product with id:" + productId);
+
+        String expectedResponseBody = objectMapper.writeValueAsString(errorResponse);
+        String actualResponseBody =  mvcResult.getResponse().getContentAsString();
+
+        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
+    }
+
+    @Test
+    void deleteProductById_whenProductIsOrdered_thenReturns400AndErrorResponse() throws Exception {
+
+        long productId = 1L;
+        when(productService.getProductById(any(Long.class))).thenReturn(product1);
+        when(productOrderService.isOrderedProductById(productId)).thenReturn(true);
+
+        MvcResult mvcResult = mockMvc.perform(delete("/api/products/{id}", productId))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+        errorResponse.setMessage("Product with id " + productId + " is ordered and can't be removed");
 
         String expectedResponseBody = objectMapper.writeValueAsString(errorResponse);
         String actualResponseBody =  mvcResult.getResponse().getContentAsString();
