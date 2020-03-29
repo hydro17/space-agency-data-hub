@@ -80,7 +80,7 @@ public class ProductController {
         }
 
         if (productService.doesMissionExist(productDTO.getMissionName()) == false) {
-            throw new MissionNotFoundException("There is no product with name: " + productDTO.getMissionName());
+            throw new MissionNotFoundException("There is no mission with name: " + productDTO.getMissionName());
         }
 
         Product productWithSetId = productService.saveProduct(productService.convertProductDTOToProduct(productDTO));
