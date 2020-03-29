@@ -47,10 +47,10 @@ class MissionServiceTest {
         mission.setFinishDate(LocalDateTime.now().plusHours(1L));
 
         ProductFootprint footprint = new ProductFootprint();
+        footprint.setStartCoordinateLatitude(100.15);
+        footprint.setEndCoordinateLatitude(200.99);
         footprint.setStartCoordinateLongitude(10.5);
         footprint.setEndCoordinateLongitude(50.7);
-        footprint.setStartCoordinateLatitude(100.15);
-        footprint.setEndCoordinateLongitude(200.99);
 
         Product product = new Product();
         product.setId(1L);

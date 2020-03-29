@@ -72,10 +72,10 @@ public class MissionController_IntegrationTest {
         mission.setFinishDate(LocalDateTime.now().plusHours(1L).truncatedTo(ChronoUnit.MILLIS));
 
         ProductFootprint footprint = new ProductFootprint();
+        footprint.setStartCoordinateLatitude(100.15);
+        footprint.setEndCoordinateLatitude(200.99);
         footprint.setStartCoordinateLongitude(10.5);
         footprint.setEndCoordinateLongitude(50.7);
-        footprint.setStartCoordinateLatitude(100.15);
-        footprint.setEndCoordinateLongitude(200.99);
 
         Product product = new Product();
         product.setAcquisitionDate(LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS));
@@ -146,7 +146,9 @@ public class MissionController_IntegrationTest {
     @Test
     void getMissionById_whenIdOfNonExistingMission_thenReturns404AndErrorResponse() throws Exception {
 
-        long missionId = 1_000_000;
+        Mission savedMissiom =  missionRepository.save(mission);
+        long missionId = savedMissiom.getId();
+        missionRepository.delete(savedMissiom);
 
         MvcResult mvcResult = mockMvc.perform(get("/api/missions/{id}", missionId)
                 .contentType("application/json"))
@@ -175,11 +177,13 @@ public class MissionController_IntegrationTest {
                 .andReturn();
 
         String actualResponseBody =  mvcResult.getResponse().getContentAsString();
-        Mission responeAsMission = objectMapper.readValue(actualResponseBody, Mission.class);
-        mission.setId(responeAsMission.getId());
-        String expectedResponseBody = objectMapper.writeValueAsString(mission);
+        Mission responseAsMission = objectMapper.readValue(actualResponseBody, Mission.class);
 
-        assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
+        assertThat(responseAsMission.getName()).isEqualTo(mission.getName());
+        assertThat(responseAsMission.getImageryType()).isEqualTo(mission.getImageryType());
+        assertThat(responseAsMission.getStartDate()).isEqualTo(mission.getStartDate());
+        assertThat(responseAsMission.getFinishDate()).isEqualTo(mission.getFinishDate());
+        assertThat(responseAsMission.getProducts().size()).isZero();
     }
 
     @Test

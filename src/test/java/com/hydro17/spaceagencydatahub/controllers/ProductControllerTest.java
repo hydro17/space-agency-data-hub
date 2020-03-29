@@ -65,21 +65,20 @@ class ProductControllerTest {
 
     private Product product1;
     private ProductDTO productDTO;
-    private ProductDTO productDTOWithNullPriceField;
 
     @BeforeEach
     void setUp() {
         Mission mission = new Mission();
-        mission.setName("mission");
+        mission.setName("mission1");
         mission.setImageryType(ImageryType.HYPERSPECTRAL);
         mission.setStartDate(LocalDateTime.now());
         mission.setFinishDate(LocalDateTime.now().plusHours(1L));
 
         ProductFootprint footprint = new ProductFootprint();
+        footprint.setStartCoordinateLatitude(100.15);
+        footprint.setEndCoordinateLatitude(200.99);
         footprint.setStartCoordinateLongitude(10.5);
         footprint.setEndCoordinateLongitude(50.7);
-        footprint.setStartCoordinateLatitude(100.15);
-        footprint.setEndCoordinateLongitude(200.99);
 
         product1 = new Product();
         product1.setAcquisitionDate(LocalDateTime.now());
@@ -95,17 +94,11 @@ class ProductControllerTest {
         nonEmptyListOfProducts.add(product1);
 
         productDTO = new ProductDTO();
-        productDTO.setMissionName("mission1");
-        productDTO.setAcquisitionDate(LocalDateTime.now());
-        productDTO.setFootprint(footprint);
-        productDTO.setPrice(new BigDecimal("10.5"));
-        productDTO.setUrl("http://com1");
-
-        productDTOWithNullPriceField = new ProductDTO();
-        productDTO.setMissionName("mission1");
-        productDTO.setAcquisitionDate(LocalDateTime.now());
-        productDTO.setFootprint(footprint);
-        productDTO.setUrl("http://com1");
+        productDTO.setMissionName(product1.getMissionName());
+        productDTO.setAcquisitionDate(product1.getAcquisitionDate());
+        productDTO.setFootprint(product1.getFootprint());
+        productDTO.setPrice(product1.getPrice());
+        productDTO.setUrl(product1.getUrl());
 
         emptyListOfProductAndOrderCounts = new ArrayList<>();
         notEmptyListOfProductAndOrderCounts = new ArrayList<>();
@@ -172,7 +165,7 @@ class ProductControllerTest {
     }
 
     @Test
-    void getProductById_whenIdOfNonExistingMission_thenReturns404AndErrorResponse() throws Exception {
+    void getProductById_whenIdOfNonExistingProduct_thenReturns404AndErrorResponse() throws Exception {
 
         long productId = 1L;
         when(productService.getProductById(any(Long.class))).thenReturn(null);
@@ -314,6 +307,9 @@ class ProductControllerTest {
     @Test
     void addProduct_whenProductFieldIsNull_thenReturns400AndErrorResponse() throws Exception {
 
+        ProductDTO productDTOWithNullPriceField = productDTO;
+        productDTOWithNullPriceField.setPrice(null);
+
         MvcResult mvcResult = mockMvc.perform(post("/api/products")
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(productDTOWithNullPriceField)))
@@ -343,7 +339,7 @@ class ProductControllerTest {
 
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setStatus(HttpStatus.NOT_FOUND.value());
-        errorResponse.setMessage("There is no product with name: " + productDTO.getMissionName());
+        errorResponse.setMessage("There is no mission with name: " + productDTO.getMissionName());
 
         String expectedResponseBody = objectMapper.writeValueAsString(errorResponse);
         String actualResponseBody =  mvcResult.getResponse().getContentAsString();
