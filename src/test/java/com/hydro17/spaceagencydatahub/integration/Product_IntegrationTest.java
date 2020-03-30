@@ -191,58 +191,6 @@ public class Product_IntegrationTest {
 
     //  ----------------------------------------------------------------------------------------------
 
-    @WithMockUser(roles = "CUSTOMER")
-    @Test
-    void findProduct_whenValidInput_returns200AndEmptyListOfProducts() throws Exception {
-
-        Mission mission = new Mission();
-        mission.setName("mission1");
-        mission.setImageryType(ImageryType.HYPERSPECTRAL);
-        mission.setStartDate(LocalDateTime.now());
-        mission.setFinishDate(LocalDateTime.now().plusHours(1L));
-
-        ProductFootprint footprint = new ProductFootprint();
-        footprint.setStartCoordinateLatitude(100.15);
-        footprint.setEndCoordinateLatitude(200.99);
-        footprint.setStartCoordinateLongitude(10.5);
-        footprint.setEndCoordinateLongitude(50.7);
-
-        Product product = new Product();
-        product.setAcquisitionDate(LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS));
-        product.setFootprint(footprint);
-        product.setPrice(new BigDecimal("10.50"));
-        product.setUrl("http://com");
-        product.setMission(mission);
-        mission.addProduct(product);
-
-        missionRepository.save(mission);
-        productRepository.save(product);
-
-//      Parameters / Query string
-        String missionName = "mission1";
-        LocalDateTime afterDate = LocalDateTime.now().minusHours(1L);
-        LocalDateTime beforeDate = LocalDateTime.now().plusHours(2L);
-        Double latitude = 150.3;
-        Double longitude = 70.7;
-        ImageryType imageryType = ImageryType.HYPERSPECTRAL;
-
-        MvcResult mvcResult = mockMvc.perform(get("/api/products/find")
-                .contentType("application/json")
-                .param("missionName", missionName)
-                .param("afterDate", String.valueOf(afterDate))
-                .param("beforeDate", String.valueOf(beforeDate))
-                .param("latitude", String.valueOf(latitude))
-                .param("longitude", String.valueOf(longitude))
-                .param("imageryType", String.valueOf(imageryType)))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        String expectedResponseBody = objectMapper.writeValueAsString(emptyListOfProducts);
-        String actualResponseBody = mvcResult.getResponse().getContentAsString();
-
-        assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
-    }
-
     // get01 = getProductsGroupedByProductIdOrderedByOrderCountDesc
     @Test
     void get01_whenValidInput_returns200AndNotEmptyListOfProducts() throws Exception {
