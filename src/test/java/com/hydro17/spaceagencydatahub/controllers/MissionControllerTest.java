@@ -113,7 +113,7 @@ class MissionControllerTest {
         String expectedResponseBody = objectMapper.writeValueAsString(nonEmptyListOfMissions);
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
 
-        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
+        assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
     }
 
     @Test
@@ -129,7 +129,7 @@ class MissionControllerTest {
         String expectedResponseBody = objectMapper.writeValueAsString(emptyListOfMissions);
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
 
-        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
+        assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
     }
 
     @WithMockUser(roles = "CUSTOMER")
@@ -153,7 +153,7 @@ class MissionControllerTest {
         String expectedResponseBody = objectMapper.writeValueAsString(mission);
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
 
-        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
+        assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
     }
 
     @Test
@@ -173,7 +173,7 @@ class MissionControllerTest {
         String expectedResponseBody = objectMapper.writeValueAsString(errorResponse);
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
 
-        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
+        assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
     }
 
 //  -----------------------------------------------------------------------------------------------
@@ -193,7 +193,7 @@ class MissionControllerTest {
         String expectedResponseBody = objectMapper.writeValueAsString(mission);
         String actualResponseBody =  mvcResult.getResponse().getContentAsString();
 
-        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
+        assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
     }
 
     @Test
@@ -214,7 +214,7 @@ class MissionControllerTest {
         String expectedResponseBody = objectMapper.writeValueAsString(errorResponse);
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
 
-        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
+        assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
     }
 
     @Test
@@ -235,7 +235,7 @@ class MissionControllerTest {
         String expectedResponseBody = objectMapper.writeValueAsString(errorResponse);
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
 
-        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
+        assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
     }
 
 //  -----------------------------------------------------------------------------------------------
@@ -256,7 +256,7 @@ class MissionControllerTest {
         String expectedResponseBody = objectMapper.writeValueAsString(mission);
         String actualResponseBody =  mvcResult.getResponse().getContentAsString();
 
-        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
+        assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
     }
 
     @Test
@@ -277,7 +277,7 @@ class MissionControllerTest {
         String expectedResponseBody = objectMapper.writeValueAsString(errorResponse);
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
 
-        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
+        assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
     }
 
     @Test
@@ -299,7 +299,7 @@ class MissionControllerTest {
         String expectedResponseBody = objectMapper.writeValueAsString(errorResponse);
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
 
-        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
+        assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
     }
 
     @Test
@@ -323,7 +323,7 @@ class MissionControllerTest {
         String expectedResponseBody = objectMapper.writeValueAsString(errorResponse);
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
 
-        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
+        assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
     }
 
 //  -----------------------------------------------------------------------------------------------
@@ -355,7 +355,7 @@ class MissionControllerTest {
         String expectedResponseBody = objectMapper.writeValueAsString(errorResponse);
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
 
-        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
+        assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
     }
 
     @Test
@@ -375,6 +375,6 @@ class MissionControllerTest {
         String expectedResponseBody = objectMapper.writeValueAsString(errorResponse);
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
 
-        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
+        assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
     }
 }

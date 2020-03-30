@@ -71,7 +71,7 @@ public class Product_IntegrationTest {
         mission = new Mission();
         mission.setName("mission1");
         mission.setImageryType(ImageryType.HYPERSPECTRAL);
-        mission.setStartDate(LocalDateTime.now());
+        mission.setStartDate(LocalDateTime.now().minusHours(1L));
         mission.setFinishDate(LocalDateTime.now().plusHours(1L));
 
         ProductFootprint footprint = new ProductFootprint();
@@ -186,7 +186,7 @@ public class Product_IntegrationTest {
         String expectedResponseBody = objectMapper.writeValueAsString(errorResponse);
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
 
-        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
+        assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
     }
 
     //  ----------------------------------------------------------------------------------------------
@@ -240,7 +240,7 @@ public class Product_IntegrationTest {
         String expectedResponseBody = objectMapper.writeValueAsString(emptyListOfProducts);
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
 
-        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
+        assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
     }
 
     // get01 = getProductsGroupedByProductIdOrderedByOrderCountDesc
@@ -323,7 +323,7 @@ public class Product_IntegrationTest {
         String expectedResponseBody = objectMapper.writeValueAsString(errorResponse);
         String actualResponseBody =  mvcResult.getResponse().getContentAsString();
 
-        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
+        assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
     }
 
     @Test
@@ -344,7 +344,7 @@ public class Product_IntegrationTest {
         String expectedResponseBody = objectMapper.writeValueAsString(errorResponse);
         String actualResponseBody =  mvcResult.getResponse().getContentAsString();
 
-        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
+        assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
     }
 
 //  ----------------------------------------------------------------------------------------------
@@ -379,7 +379,7 @@ public class Product_IntegrationTest {
         String expectedResponseBody = objectMapper.writeValueAsString(errorResponse);
         String actualResponseBody =  mvcResult.getResponse().getContentAsString();
 
-        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
+        assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
     }
 
     @Test
@@ -403,6 +403,6 @@ public class Product_IntegrationTest {
         String expectedResponseBody = objectMapper.writeValueAsString(errorResponse);
         String actualResponseBody =  mvcResult.getResponse().getContentAsString();
 
-        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
+        assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
     }
 }

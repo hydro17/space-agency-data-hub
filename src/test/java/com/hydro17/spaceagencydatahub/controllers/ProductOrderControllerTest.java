@@ -100,7 +100,7 @@ class ProductOrderControllerTest {
         String expectedResponsBody = objectMapper.writeValueAsString(nonEmptyProductOrderList);
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
 
-        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponsBody);
+        assertThat(actualResponseBody).isEqualTo(expectedResponsBody);
     }
 
     @Test
@@ -118,7 +118,7 @@ class ProductOrderControllerTest {
         String expectedResponseBody = objectMapper.writeValueAsString(productOrder);
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
 
-        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
+        assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
     }
 
     @Test
@@ -137,7 +137,7 @@ class ProductOrderControllerTest {
         String expectedResponseBody = objectMapper.writeValueAsString(errorResponse);
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
 
-        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
+        assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
     }
 
     @WithMockUser(roles = "CONTENT_MANAGER")

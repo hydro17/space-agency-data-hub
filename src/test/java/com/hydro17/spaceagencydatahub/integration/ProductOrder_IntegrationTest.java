@@ -106,7 +106,7 @@ public class ProductOrder_IntegrationTest {
         String expectedResponsBody = objectMapper.writeValueAsString(nonEmptyProductOrderList);
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
 
-        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponsBody);
+        assertThat(actualResponseBody).isEqualTo(expectedResponsBody);
     }
 
     @Test
@@ -120,7 +120,7 @@ public class ProductOrder_IntegrationTest {
         String expectedResponsBody = objectMapper.writeValueAsString(new ArrayList<ProductOrder>());
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
 
-        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponsBody);
+        assertThat(actualResponseBody).isEqualTo(expectedResponsBody);
     }
 
     @Test
@@ -156,6 +156,6 @@ public class ProductOrder_IntegrationTest {
         String expectedResponseBody = objectMapper.writeValueAsString(errorResponse);
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
 
-        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
+        assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
     }
 }
