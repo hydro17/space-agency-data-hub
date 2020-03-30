@@ -53,7 +53,6 @@ class ProductOrderControllerTest {
 
     private ProductOrder productOrder;
     private ProductOrderDTO nonEmptyProductOrderDTO;
-    private ProductOrderDTO emptyProductOrderDTO;
 
     @BeforeEach
     void setUp() {
@@ -86,12 +85,11 @@ class ProductOrderControllerTest {
 
         nonEmptyProductOrderDTO = new ProductOrderDTO();
         nonEmptyProductOrderDTO.setProductIds(Arrays.asList(1L, 2L, 3L));
-
-        emptyProductOrderDTO = new ProductOrderDTO();
     }
 
     @Test
     void getAllProductOrdersOrderedByPlacedOnDesc_whenValidInput_thenReturns200AndNonEmptyProductOrderList() throws Exception {
+
         when(productOrderService.getAllProductOrdersOrderedByPlacedOnDesc()).thenReturn(nonEmptyProductOrderList);
 
         MvcResult mvcResult = mockMvc.perform(get("/api/orders/history")
@@ -128,7 +126,7 @@ class ProductOrderControllerTest {
 
         MvcResult mvcResult = mockMvc.perform(post("/api/orders")
                 .contentType("application/json")
-                .content(objectMapper.writeValueAsString(emptyProductOrderDTO)))
+                .content(objectMapper.writeValueAsString(new ProductOrderDTO())))
                 .andExpect(status().isBadRequest())
                 .andReturn();
 

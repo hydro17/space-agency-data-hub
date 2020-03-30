@@ -1,4 +1,4 @@
-package com.hydro17.spaceagencydatahub.controllers;
+package com.hydro17.spaceagencydatahub.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hydro17.spaceagencydatahub.exceptions.ErrorResponse;
@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureTestDatabase
 @AutoConfigureMockMvc
 @WithMockUser(roles = "CONTENT_MANAGER")
-public class MissionController_IntegrationTest {
+public class Mission_IntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;

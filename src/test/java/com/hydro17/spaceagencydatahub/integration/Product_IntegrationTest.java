@@ -1,4 +1,4 @@
-package com.hydro17.spaceagencydatahub.controllers;
+package com.hydro17.spaceagencydatahub.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hydro17.spaceagencydatahub.exceptions.ErrorResponse;
@@ -37,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase
 @WithMockUser(roles="CONTENT_MANAGER")
-public class ProductController_IntegrationTest {
+public class Product_IntegrationTest {
 
     @Autowired
     ProductRepository productRepository;
@@ -241,28 +241,6 @@ public class ProductController_IntegrationTest {
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
 
         assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
-    }
-
-    @Test
-    void findProduct_whenValidInputAndInvalidRole_returns403() throws Exception {
-
-        String missionName = "mission1";
-        LocalDateTime beforeDate = LocalDateTime.now();
-        LocalDateTime afterDate = LocalDateTime.now().plusHours(1L);
-        Double latitude = 10.3;
-        Double longitude = 20.7;
-        ImageryType imageryType = ImageryType.HYPERSPECTRAL;
-
-        MvcResult mvcResult = mockMvc.perform(get("/api/products/find")
-                .contentType("application/json")
-                .param("missionName", missionName)
-                .param("beforeDate", String.valueOf(beforeDate))
-                .param("afterDate", String.valueOf(afterDate))
-                .param("latitude", String.valueOf(latitude))
-                .param("longitude", String.valueOf(longitude))
-                .param("imageryType", String.valueOf(imageryType)))
-                .andExpect(status().isForbidden())
-                .andReturn();
     }
 
     // get01 = getProductsGroupedByProductIdOrderedByOrderCountDesc
