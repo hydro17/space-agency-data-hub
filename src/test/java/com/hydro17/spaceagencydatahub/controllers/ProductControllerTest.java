@@ -65,13 +65,14 @@ class ProductControllerTest {
 
     private Product product1;
     private ProductDTO productDTO;
+    private Mission mission;
 
     @BeforeEach
     void setUp() {
-        Mission mission = new Mission();
+        mission = new Mission();
         mission.setName("mission1");
         mission.setImageryType(ImageryType.HYPERSPECTRAL);
-        mission.setStartDate(LocalDateTime.now());
+        mission.setStartDate(LocalDateTime.now().minusHours(1L));
         mission.setFinishDate(LocalDateTime.now().plusHours(1L));
 
         ProductFootprint footprint = new ProductFootprint();
@@ -289,7 +290,7 @@ class ProductControllerTest {
     @Test
     void addProduct_whenValidInput_thenReturns200AndMission() throws Exception {
 
-        when(productService.doesMissionExist(any(String.class))).thenReturn(true);
+        when(missionService.getMissionByName(any(String.class))).thenReturn(java.util.Optional.ofNullable(mission));
         when(productService.saveProduct(productService.convertProductDTOToProduct(productDTO))).thenReturn(product1);
 
         MvcResult mvcResult = mockMvc.perform(post("/api/products")
@@ -299,6 +300,56 @@ class ProductControllerTest {
                 .andReturn();
 
         String expectedResponseBody = objectMapper.writeValueAsString(product1);
+        String actualResponseBody =  mvcResult.getResponse().getContentAsString();
+
+        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
+    }
+
+    @Test
+    void addProduct_whenAcquisitionDateBeforeMissionStartDate_thenReturns200AndMission() throws Exception {
+
+        productDTO.setAcquisitionDate(mission.getStartDate().minusHours(1L));
+
+        when(missionService.getMissionByName(any(String.class))).thenReturn(java.util.Optional.ofNullable(mission));
+        when(productService.saveProduct(productService.convertProductDTOToProduct(productDTO))).thenReturn(product1);
+
+        MvcResult mvcResult = mockMvc.perform(post("/api/products")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(productDTO)))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+        errorResponse.setMessage("Product AcquisitionDate " + productDTO.getAcquisitionDate()
+                + " is before mission start date " + mission.getStartDate());
+
+        String expectedResponseBody = objectMapper.writeValueAsString(errorResponse);
+        String actualResponseBody =  mvcResult.getResponse().getContentAsString();
+
+        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
+    }
+
+    @Test
+    void addProduct_whenAcquisitionDateAfterMissionFinishtDate_thenReturns200AndMission() throws Exception {
+
+        productDTO.setAcquisitionDate(mission.getFinishDate().plusHours(1L));
+
+        when(missionService.getMissionByName(any(String.class))).thenReturn(java.util.Optional.ofNullable(mission));
+        when(productService.saveProduct(productService.convertProductDTOToProduct(productDTO))).thenReturn(product1);
+
+        MvcResult mvcResult = mockMvc.perform(post("/api/products")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(productDTO)))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+        errorResponse.setMessage("Product AcquisitionDate " + productDTO.getAcquisitionDate()
+                + " is after mission start date " + mission.getStartDate());
+
+        String expectedResponseBody = objectMapper.writeValueAsString(errorResponse);
         String actualResponseBody =  mvcResult.getResponse().getContentAsString();
 
         assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);

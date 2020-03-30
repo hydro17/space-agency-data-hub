@@ -1,12 +1,11 @@
 package com.hydro17.spaceagencydatahub.controllers;
 
-import com.hydro17.spaceagencydatahub.exceptions.MissionNotFoundException;
-import com.hydro17.spaceagencydatahub.exceptions.ProductIsOrderedException;
-import com.hydro17.spaceagencydatahub.exceptions.ProductNotFoundException;
-import com.hydro17.spaceagencydatahub.exceptions.ProductNullFieldException;
+import com.hydro17.spaceagencydatahub.exceptions.*;
 import com.hydro17.spaceagencydatahub.models.IProductAndOrderCount;
+import com.hydro17.spaceagencydatahub.models.Mission;
 import com.hydro17.spaceagencydatahub.models.Product;
 import com.hydro17.spaceagencydatahub.models.ProductDTO;
+import com.hydro17.spaceagencydatahub.services.MissionService;
 import com.hydro17.spaceagencydatahub.services.OrderItemService;
 import com.hydro17.spaceagencydatahub.services.ProductOrderService;
 import com.hydro17.spaceagencydatahub.services.ProductService;
@@ -26,12 +25,14 @@ public class ProductController {
     private ProductService productService;
     private OrderItemService orderItemService;
     private ProductOrderService productOrderService;
+    private MissionService missionService;
 
     public ProductController(ProductService productService, OrderItemService orderItemService,
-                             ProductOrderService productOrderService) {
+                             ProductOrderService productOrderService, MissionService missionService) {
         this.productService = productService;
         this.orderItemService = orderItemService;
         this.productOrderService = productOrderService;
+        this.missionService = missionService;
     }
 
     @GetMapping
@@ -79,8 +80,18 @@ public class ProductController {
             throw new ProductNullFieldException("No product field can be null");
         }
 
-        if (productService.doesMissionExist(productDTO.getMissionName()) == false) {
+        Mission mission = missionService.getMissionByName(productDTO.getMissionName()).orElseThrow(() -> {
             throw new MissionNotFoundException("There is no mission with name: " + productDTO.getMissionName());
+        });
+
+        if (productDTO.getAcquisitionDate().isBefore(mission.getStartDate())) {
+            throw new ProductBadAcquisitionDateException("Product AcquisitionDate " + productDTO.getAcquisitionDate()
+                    + " is before mission start date " + mission.getStartDate());
+        }
+
+        if (productDTO.getAcquisitionDate().isAfter(mission.getFinishDate())) {
+            throw new ProductBadAcquisitionDateException("Product AcquisitionDate " + productDTO.getAcquisitionDate()
+                    + " is after mission start date " + mission.getStartDate());
         }
 
         Product productWithSetId = productService.saveProduct(productService.convertProductDTOToProduct(productDTO));
