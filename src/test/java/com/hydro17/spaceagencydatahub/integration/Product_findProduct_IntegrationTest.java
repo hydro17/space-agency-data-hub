@@ -1,6 +1,7 @@
 package com.hydro17.spaceagencydatahub.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hydro17.spaceagencydatahub.exceptions.ErrorResponse;
 import com.hydro17.spaceagencydatahub.models.Mission;
 import com.hydro17.spaceagencydatahub.models.Product;
 import com.hydro17.spaceagencydatahub.models.ProductFootprint;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -122,7 +124,7 @@ public class Product_findProduct_IntegrationTest {
     }
 
     @Test
-    void findProduct_whenInvalidMissionName_returns200AndEmptyListOfProducts() throws Exception {
+    void findProduct_whenNonExistingMissionName_returns200AndEmptyListOfProducts() throws Exception {
 
         String missionName = "mission2";
 
@@ -247,7 +249,7 @@ public class Product_findProduct_IntegrationTest {
     }
 
     @Test
-    void findProduct_whenInvalidImageryType_returns200AndEmptyListOfProducts() throws Exception {
+    void findProduct_whenProductsWithImageryTypeDoNotExist_returns200AndEmptyListOfProducts() throws Exception {
 
         ImageryType imageryType = ImageryType.PANCHROMATIC;
 
@@ -258,6 +260,27 @@ public class Product_findProduct_IntegrationTest {
                 .andReturn();
 
         String expectedResponseBody = objectMapper.writeValueAsString(emptyListOfProducts);
+        String actualResponseBody = mvcResult.getResponse().getContentAsString();
+
+        assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
+    }
+
+    @Test
+    void findProduct_whenInvalidImageryType_returns400AndErrorResponse() throws Exception {
+
+        String imageryTypeAsString = "HYPER";
+
+        MvcResult mvcResult = mockMvc.perform(get("/api/products/find")
+                .contentType("application/json")
+                .param("imageryType", imageryTypeAsString))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+        errorResponse.setMessage("Imagery type " + imageryTypeAsString + " does not exist");
+
+        String expectedResponseBody = objectMapper.writeValueAsString(errorResponse);
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
 
         assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
