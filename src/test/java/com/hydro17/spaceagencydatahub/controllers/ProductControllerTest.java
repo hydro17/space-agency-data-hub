@@ -215,9 +215,77 @@ class ProductControllerTest {
                 .andReturn();
 
         verify(productService, times(1)).getFilteredProducts(eq(missionName), eq(beforeDate),
-                eq(afterDate), eq(latitude), eq(longitude), eq((imageryType)));
+                eq(afterDate), eq(latitude), eq(longitude), eq(imageryType));
 
         String expectedResponseBody = objectMapper.writeValueAsString(nonEmptyListOfProducts);
+        String actualResponseBody = mvcResult.getResponse().getContentAsString();
+
+        assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
+    }
+
+    @WithMockUser(roles = "CUSTOMER")
+    @Test
+    void findProduct_whenLowerCaseImageryType_returns200AndNonEmptyListOfProducts() throws Exception {
+
+        String missionName = "mission1";
+        LocalDateTime beforeDate = LocalDateTime.now();
+        LocalDateTime afterDate = LocalDateTime.now().plusHours(1L);
+        Double latitude = 10.3;
+        Double longitude = 20.7;
+        ImageryType imageryType = ImageryType.HYPERSPECTRAL;
+
+        when(productService.getFilteredProducts(nullable(String.class), nullable(LocalDateTime.class), nullable(LocalDateTime.class),
+                nullable(Double.class), nullable(Double.class), nullable(ImageryType.class))).thenReturn(nonEmptyListOfProducts);
+        when(productService.removeUrlOfUnorderedProducts(nonEmptyListOfProducts)).thenReturn(nonEmptyListOfProducts);
+
+        MvcResult mvcResult = mockMvc.perform(get("/api/products/find")
+                .contentType("application/json")
+                .param("missionName", missionName)
+                .param("beforeDate", String.valueOf(beforeDate))
+                .param("afterDate", String.valueOf(afterDate))
+                .param("latitude", String.valueOf(latitude))
+                .param("longitude", String.valueOf(longitude))
+                .param("imageryType", "hyperspectral"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        verify(productService, times(1)).getFilteredProducts(eq(missionName), eq(beforeDate),
+                eq(afterDate), eq(latitude), eq(longitude), eq(imageryType));
+
+        String expectedResponseBody = objectMapper.writeValueAsString(nonEmptyListOfProducts);
+        String actualResponseBody = mvcResult.getResponse().getContentAsString();
+
+        assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
+    }
+
+    @WithMockUser(roles = "CUSTOMER")
+    @Test
+    void findProduct_whenInvalidImageryType_returns400AndErrorResponse() throws Exception {
+
+        String missionName = "mission1";
+        LocalDateTime beforeDate = LocalDateTime.now();
+        LocalDateTime afterDate = LocalDateTime.now().plusHours(1L);
+        Double latitude = 10.3;
+        Double longitude = 20.7;
+//        ImageryType imageryType = ImageryType.HYPERSPECTRAL;
+        String imageryTypeAsString = "hyper";
+
+        MvcResult mvcResult = mockMvc.perform(get("/api/products/find")
+                .contentType("application/json")
+                .param("missionName", missionName)
+                .param("beforeDate", String.valueOf(beforeDate))
+                .param("afterDate", String.valueOf(afterDate))
+                .param("latitude", String.valueOf(latitude))
+                .param("longitude", String.valueOf(longitude))
+                .param("imageryType", imageryTypeAsString))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+        errorResponse.setMessage("Imagery type " + imageryTypeAsString + " does not exist");
+
+        String expectedResponseBody = objectMapper.writeValueAsString(errorResponse);
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
 
         assertThat(actualResponseBody).isEqualTo(expectedResponseBody);

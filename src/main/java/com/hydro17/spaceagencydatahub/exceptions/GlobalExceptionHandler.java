@@ -21,7 +21,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({MissionNameNotUniqueException.class, MissionProductExistsException.class,
             MissionNullFieldException.class, ProductNullFieldException.class, ProductOrderNoOrderItemsException.class,
-            ProductIsOrderedException.class, ProductBadAcquisitionDateException.class})
+            ProductIsOrderedException.class, ProductBadAcquisitionDateException.class,
+            ProductBadFindProductParameterException.class})
     public ResponseEntity<ErrorResponse> handleBadRequestException(RuntimeException ex) {
 
         ErrorResponse error = new ErrorResponse();

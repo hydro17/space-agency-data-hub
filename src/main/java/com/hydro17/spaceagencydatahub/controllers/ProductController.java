@@ -58,9 +58,20 @@ public class ProductController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime afterDate,
             @RequestParam(required = false) Double latitude,
             @RequestParam(required = false) Double longitude,
-            @RequestParam(required = false) ImageryType imageryType
+            @RequestParam(required = false, value = "imageryType") String imageryTypeAsString
     ) {
-        List<Product> products = productService.getFilteredProducts(missionName, beforeDate, afterDate, latitude, longitude, imageryType);
+        ImageryType imageryType = null;
+
+        if (imageryTypeAsString != null) {
+            try {
+                imageryType = ImageryType.valueOf(imageryTypeAsString.toUpperCase());
+            } catch (IllegalArgumentException ex) {
+                throw new ProductBadFindProductParameterException("Imagery type " + imageryTypeAsString + " does not exist");
+            }
+        }
+
+        List<Product> products = productService.getFilteredProducts(missionName, beforeDate, afterDate, latitude,
+                longitude, imageryType);
         return productService.removeUrlOfUnorderedProducts(products);
     }
 

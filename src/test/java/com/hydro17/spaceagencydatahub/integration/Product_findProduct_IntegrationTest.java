@@ -1,21 +1,19 @@
 package com.hydro17.spaceagencydatahub.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hydro17.spaceagencydatahub.exceptions.ErrorResponse;
-import com.hydro17.spaceagencydatahub.models.*;
+import com.hydro17.spaceagencydatahub.models.Mission;
+import com.hydro17.spaceagencydatahub.models.Product;
+import com.hydro17.spaceagencydatahub.models.ProductFootprint;
 import com.hydro17.spaceagencydatahub.repositories.MissionRepository;
 import com.hydro17.spaceagencydatahub.repositories.ProductOrderRepository;
 import com.hydro17.spaceagencydatahub.repositories.ProductRepository;
 import com.hydro17.spaceagencydatahub.utils.ImageryType;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -27,12 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.nullable;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
