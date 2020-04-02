@@ -25,12 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.nullable;
-import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -245,11 +241,7 @@ public class Product_IntegrationTest {
 
         productDTO.getFootprint().setId(responseAsProduct.getFootprint().getId());
 
-//      Mission name cannot be asserted because of JSON mapping
-        assertThat(responseAsProduct.getAcquisitionDate()).isEqualTo(productDTO.getAcquisitionDate());
-        assertThat(responseAsProduct.getFootprint()).isEqualTo(productDTO.getFootprint());
-        assertThat(responseAsProduct.getPrice()).isEqualTo(productDTO.getPrice());
-        assertThat(responseAsProduct.getUrl()).isEqualTo(productDTO.getUrl());
+        assertThat(responseAsProduct).isEqualToIgnoringGivenFields(productDTO, "id", "mission");
     }
 
     @Test
@@ -287,7 +279,7 @@ public class Product_IntegrationTest {
 
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setStatus(HttpStatus.NOT_FOUND.value());
-        errorResponse.setMessage("There is no mission with name: " + productDTO.getMissionName());
+        errorResponse.setMessage("There is no mission with the name: " + productDTO.getMissionName());
 
         String expectedResponseBody = objectMapper.writeValueAsString(errorResponse);
         String actualResponseBody =  mvcResult.getResponse().getContentAsString();

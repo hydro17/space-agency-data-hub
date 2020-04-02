@@ -10,6 +10,7 @@ import com.hydro17.spaceagencydatahub.services.OrderItemService;
 import com.hydro17.spaceagencydatahub.services.ProductOrderService;
 import com.hydro17.spaceagencydatahub.services.ProductService;
 import com.hydro17.spaceagencydatahub.utils.ImageryType;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -26,13 +27,16 @@ public class ProductController {
     private OrderItemService orderItemService;
     private ProductOrderService productOrderService;
     private MissionService missionService;
+    private ConversionService conversionService;
 
     public ProductController(ProductService productService, OrderItemService orderItemService,
-                             ProductOrderService productOrderService, MissionService missionService) {
+                             ProductOrderService productOrderService, MissionService missionService,
+                             ConversionService conversionService) {
         this.productService = productService;
         this.orderItemService = orderItemService;
         this.productOrderService = productOrderService;
         this.missionService = missionService;
+        this.conversionService = conversionService;
     }
 
     @GetMapping
@@ -40,6 +44,7 @@ public class ProductController {
         return productService.getAllProducts();
     }
 
+    //TODO refactor null -> optional
     @GetMapping("/{id}")
     public Product getProductById(@PathVariable long id) {
         Product product = productService.getProductById(id);
@@ -92,7 +97,7 @@ public class ProductController {
         }
 
         Mission mission = missionService.getMissionByName(productDTO.getMissionName()).orElseThrow(() -> {
-            throw new MissionNotFoundException("There is no mission with name: " + productDTO.getMissionName());
+            throw new MissionNotFoundException("There is no mission with the name: " + productDTO.getMissionName());
         });
 
         if (productDTO.getAcquisitionDate().isBefore(mission.getStartDate())) {
@@ -105,7 +110,7 @@ public class ProductController {
                     + " is after mission start date " + mission.getStartDate());
         }
 
-        Product productWithSetId = productService.saveProduct(productService.convertProductDTOToProduct(productDTO));
+        Product productWithSetId = productService.saveProduct(conversionService.convert(productDTO, Product.class));
         return productWithSetId;
     }
 

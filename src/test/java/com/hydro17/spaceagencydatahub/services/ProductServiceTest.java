@@ -172,20 +172,6 @@ class ProductServiceTest {
     }
 
     @Test
-    void convertProductDTOToProduct() {
-        when(missionService.getMissionByName(anyString())).thenReturn(Optional.ofNullable(mission));
-
-        Product actualOutput = productService.convertProductDTOToProduct(productDTO);
-
-        assertThat(actualOutput.getId()).isZero();
-        assertThat(actualOutput.getMission().getName()).isEqualTo(productDTO.getMissionName());
-        assertThat(actualOutput.getAcquisitionDate()).isEqualTo(productDTO.getAcquisitionDate());
-        assertThat(actualOutput.getFootprint()).isEqualTo(productDTO.getFootprint());
-        assertThat(actualOutput.getPrice()).isEqualTo(productDTO.getPrice());
-        assertThat(actualOutput.getUrl()).isEqualTo(productDTO.getUrl());
-    }
-
-    @Test
     void removeUrlOfUnorderedProducts_whenProductOrdered_thenDoNotRemoveUrl() {
         when(productOrderService.isOrderedProductById(anyLong())).thenReturn(true);
 

@@ -59,22 +59,6 @@ public class ProductService {
         return false;
     }
 
-    public Product convertProductDTOToProduct(ProductDTO productDTO) {
-        Product product = new Product();
-
-        product.setId(0);
-        product.setAcquisitionDate(productDTO.getAcquisitionDate());
-        product.setFootprint(productDTO.getFootprint());
-        product.setPrice(productDTO.getPrice());
-        product.setUrl(productDTO.getUrl());
-
-        Mission mission = missionService.getMissionByName(productDTO.getMissionName()).get();
-        mission.addProduct(product);
-        product.setMission(mission);
-
-        return product;
-    }
-
     public List<Product> removeUrlOfUnorderedProducts(List<Product> products) {
 
             products.forEach(product -> {

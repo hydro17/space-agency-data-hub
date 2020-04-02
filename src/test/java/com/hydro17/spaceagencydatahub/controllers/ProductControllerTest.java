@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -53,6 +54,10 @@ class ProductControllerTest {
 
     @MockBean
     private ProductOrderService productOrderService;
+
+    //TODO add unit test conversionService.covert(ProductDto, Product.class)
+    @Autowired
+    ConversionService conversionService;
 
     // Added due to CommandLineRunner in the class SpaceAgencyDataHubApplication
     @MockBean
@@ -359,7 +364,7 @@ class ProductControllerTest {
     void addProduct_whenValidInput_thenReturns200AndMission() throws Exception {
 
         when(missionService.getMissionByName(any(String.class))).thenReturn(java.util.Optional.ofNullable(mission));
-        when(productService.saveProduct(productService.convertProductDTOToProduct(productDTO))).thenReturn(product1);
+        when(productService.saveProduct(conversionService.convert(productDTO, Product.class))).thenReturn(product1);
 
         MvcResult mvcResult = mockMvc.perform(post("/api/products")
                 .contentType("application/json")
@@ -379,7 +384,7 @@ class ProductControllerTest {
         productDTO.setAcquisitionDate(mission.getStartDate().minusHours(1L));
 
         when(missionService.getMissionByName(any(String.class))).thenReturn(java.util.Optional.ofNullable(mission));
-        when(productService.saveProduct(productService.convertProductDTOToProduct(productDTO))).thenReturn(product1);
+        when(productService.saveProduct(conversionService.convert(productDTO, Product.class))).thenReturn(product1);
 
         MvcResult mvcResult = mockMvc.perform(post("/api/products")
                 .contentType("application/json")
@@ -404,7 +409,7 @@ class ProductControllerTest {
         productDTO.setAcquisitionDate(mission.getFinishDate().plusHours(1L));
 
         when(missionService.getMissionByName(any(String.class))).thenReturn(java.util.Optional.ofNullable(mission));
-        when(productService.saveProduct(productService.convertProductDTOToProduct(productDTO))).thenReturn(product1);
+        when(productService.saveProduct(conversionService.convert(productDTO, Product.class))).thenReturn(product1);
 
         MvcResult mvcResult = mockMvc.perform(post("/api/products")
                 .contentType("application/json")
@@ -458,7 +463,7 @@ class ProductControllerTest {
 
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setStatus(HttpStatus.NOT_FOUND.value());
-        errorResponse.setMessage("There is no mission with name: " + productDTO.getMissionName());
+        errorResponse.setMessage("There is no mission with the name: " + productDTO.getMissionName());
 
         String expectedResponseBody = objectMapper.writeValueAsString(errorResponse);
         String actualResponseBody =  mvcResult.getResponse().getContentAsString();
