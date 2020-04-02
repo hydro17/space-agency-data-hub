@@ -17,6 +17,7 @@ public class Mission {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    //TODO check the 'unique' constraint
     @Column(unique = true)
     @NotNull
     private String name;

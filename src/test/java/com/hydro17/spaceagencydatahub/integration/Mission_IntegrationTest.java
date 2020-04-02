@@ -57,6 +57,7 @@ public class Mission_IntegrationTest {
     private Mission missionWithOneProduct;
     private Mission mission;
 
+    //TODO check @BeforeAll (static)
     @BeforeEach
     void setUp() {
         productOrderRepository.deleteAll();
@@ -95,6 +96,8 @@ public class Mission_IntegrationTest {
         nonEmptyListOfMissions.add(mission);
         nonEmptyListOfMissions.add(missionWithOneProduct);
     }
+
+    //  -----------------------------------------------------------------------------------------------
 
     @Test
     void getAllMissions_whenNoMissions_thenReturns200AndEmptyListOfMissions() throws Exception {
@@ -235,7 +238,6 @@ public class Mission_IntegrationTest {
     void updateMission_whenValidInput_thenReturns200AndMission_and_UpdatedMissionFromDb() throws Exception {
 
         Mission savedMission = missionRepository.save(mission);
-
         savedMission.setName("updated mission name");
 
         MvcResult mvcResult = mockMvc.perform(put("/api/missions")

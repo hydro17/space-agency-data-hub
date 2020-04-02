@@ -26,9 +26,12 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = MissionController.class)
@@ -148,6 +151,8 @@ class MissionControllerTest {
         MvcResult mvcResult = mockMvc.perform(get("/api/missions/{id}", 1L)
                 .contentType("application/json"))
                 .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("$.name", is("mission1")))
                 .andReturn();
 
         String expectedResponseBody = objectMapper.writeValueAsString(mission);
