@@ -4,19 +4,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler({MissionNotFoundException.class, ProductNotFoundException.class})
-    public ResponseEntity<ErrorResponse> handleNotFoundException(RuntimeException ex) {
+    public ErrorResponse handleNotFoundException(RuntimeException ex) {
 
-        ErrorResponse error = new ErrorResponse();
-        error.setStatus(HttpStatus.NOT_FOUND.value());
-        error.setMessage(ex.getMessage());
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setStatus(HttpStatus.NOT_FOUND.value());
+        errorResponse.setMessage(ex.getMessage());
 
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        return errorResponse;
     }
 
     @ExceptionHandler({MissionNameNotUniqueException.class, MissionProductExistsException.class,
