@@ -235,7 +235,7 @@ class MissionControllerTest {
 
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-        errorResponse.setMessage("No Mission field can be null");
+        errorResponse.setMessage("Mission fields: 'imageryType' must not be null");
 
         String expectedResponseBody = objectMapper.writeValueAsString(errorResponse);
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
@@ -323,7 +323,7 @@ class MissionControllerTest {
 
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-        errorResponse.setMessage("No Mission field can be null");
+        errorResponse.setMessage("Mission fields: 'imageryType' must not be null");
 
         String expectedResponseBody = objectMapper.writeValueAsString(errorResponse);
         String actualResponseBody = mvcResult.getResponse().getContentAsString();

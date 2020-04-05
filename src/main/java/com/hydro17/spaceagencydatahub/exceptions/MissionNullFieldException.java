@@ -1,8 +1,12 @@
 package com.hydro17.spaceagencydatahub.exceptions;
 
-public class MissionNullFieldException extends RuntimeException {
+import lombok.Getter;
+import org.springframework.validation.BindingResult;
 
-    public MissionNullFieldException(String message) {
-        super(message);
+@Getter
+public class MissionNullFieldException extends NullFieldException {
+
+    public MissionNullFieldException(BindingResult bindingResult) {
+        super("Mission fields: ", bindingResult);
     }
 }

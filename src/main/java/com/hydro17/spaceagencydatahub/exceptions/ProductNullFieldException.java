@@ -1,8 +1,10 @@
 package com.hydro17.spaceagencydatahub.exceptions;
 
-public class ProductNullFieldException extends RuntimeException {
+import org.springframework.validation.BindingResult;
 
-    public ProductNullFieldException(String message) {
-        super(message);
+public class ProductNullFieldException extends NullFieldException {
+
+    public ProductNullFieldException(BindingResult bindingResult) {
+        super("Product fields: ", bindingResult);
     }
 }

@@ -469,7 +469,7 @@ class ProductControllerTest {
 
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-        errorResponse.setMessage("No product field can be null");
+        errorResponse.setMessage("Product fields: 'price' must not be null");
 
         String expectedResponseBody = objectMapper.writeValueAsString(errorResponse);
         String actualResponseBody =  mvcResult.getResponse().getContentAsString();

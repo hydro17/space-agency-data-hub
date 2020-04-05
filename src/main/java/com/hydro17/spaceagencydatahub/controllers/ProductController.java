@@ -111,7 +111,7 @@ public class ProductController {
     public ProductDTO addProduct(@Valid @RequestBody ProductDTO productDTO, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
-            throw new ProductNullFieldException("No product field can be null");
+            throw new ProductNullFieldException(bindingResult);
         }
 
         Mission mission = missionService.getMissionByName(productDTO.getMissionName()).orElseThrow(() -> {
@@ -129,6 +129,7 @@ public class ProductController {
         }
 
         productDTO.setId(0);
+
         Product productWithSetId = productService.saveProduct(conversionService.convert(productDTO, Product.class));
         return conversionService.convert(productWithSetId, ProductDTO.class);
     }
