@@ -1,8 +1,7 @@
 package com.hydro17.spaceagencydatahub.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -10,7 +9,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Data
+@Getter
+@Setter
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

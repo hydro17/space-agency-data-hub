@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -84,7 +85,7 @@ class ProductOrderControllerTest {
         nonEmptyProductOrderList.add(productOrder);
 
         nonEmptyProductOrderDTO = new ProductOrderDTO();
-        nonEmptyProductOrderDTO.setProductIds(Arrays.asList(1L, 2L, 3L));
+        nonEmptyProductOrderDTO.setProductIds(Arrays.asList(1L));
     }
 
     @Test
@@ -106,8 +107,8 @@ class ProductOrderControllerTest {
     @Test
     void addOrder_whenValidInput_thenReturns201AndProductOrder() throws Exception {
 
-        when(productOrderService.convertProductOrderDTOToProductOrder(nonEmptyProductOrderDTO)).thenReturn(productOrder);
-        when(productOrderService.saveProductOrder(productOrder)).thenReturn(productOrder);
+        when(productOrderService.convertProductOrderDTOToProductOrder(any(ProductOrderDTO.class))).thenReturn(productOrder);
+        when(productOrderService.saveProductOrder(any(ProductOrder.class))).thenReturn(productOrder);
 
         MvcResult mvcResult = mockMvc.perform(post("/api/orders")
                 .contentType("application/json")

@@ -3,6 +3,8 @@ package com.hydro17.spaceagencydatahub.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hydro17.spaceagencydatahub.utils.ImageryType;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -11,7 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
 public class Mission {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

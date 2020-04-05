@@ -31,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = ProductController.class)
@@ -389,7 +390,8 @@ class ProductControllerTest {
         when(missionService.getMissionByName(anyString())).thenReturn(Optional.ofNullable(mission));
 
         //TODO change conversionService to mocked version
-        when(productService.saveProduct(conversionService.convert(productDTO, Product.class))).thenReturn(product1);
+//        when(productService.saveProduct(conversionService.convert(productDTO, Product.class))).thenReturn(product1);
+        when(productService.saveProduct(any(Product.class))).thenReturn(product1);
 //        when(productService.saveProduct(product1)).thenReturn(product1);
 //        when(conversionService.convert(product1, ProductDTO.class)).thenReturn(productDTOWithIdNotEqualZero);
 
@@ -397,6 +399,7 @@ class ProductControllerTest {
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(productDTO)))
                 .andExpect(status().isCreated())
+                .andDo(print())
                 .andReturn();
 
         String expectedResponseBody = objectMapper.writeValueAsString(productDTOWithIdNotEqualZero);

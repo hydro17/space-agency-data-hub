@@ -1,13 +1,15 @@
 package com.hydro17.spaceagencydatahub.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode
 public class ProductFootprint {
 
     @JsonIgnore

@@ -1,9 +1,11 @@
 package com.hydro17.spaceagencydatahub.exceptions;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.validation.BindingResult;
 
-@Data
+@Getter
+@Setter
 public abstract class NullFieldException extends RuntimeException {
 
     private String message;
