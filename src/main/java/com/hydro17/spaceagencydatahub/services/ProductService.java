@@ -1,8 +1,6 @@
 package com.hydro17.spaceagencydatahub.services;
 
-import com.hydro17.spaceagencydatahub.models.Mission;
 import com.hydro17.spaceagencydatahub.models.Product;
-import com.hydro17.spaceagencydatahub.models.ProductDTO;
 import com.hydro17.spaceagencydatahub.repositories.ProductRepository;
 import com.hydro17.spaceagencydatahub.repositories.ProductSpecifications;
 import com.hydro17.spaceagencydatahub.utils.ImageryType;
@@ -35,9 +33,8 @@ public class ProductService {
         return productRepository.findAll();
     }
 
-    public Product getProductById(long id) {
-        Optional<Product> product = productRepository.findById(id);
-        return product.orElse(null);
+    public Optional<Product> getProductById(long id) {
+        return productRepository.findById(id);
     }
 
     public List<Product> getFilteredProducts(String missionNme, LocalDateTime beforeDate, LocalDateTime afterDate,

@@ -114,7 +114,7 @@ class ProductOrderServiceTest {
 
     @Test
     void convertProductOrderDTOToProductOrder_whenValidInput_thenReturnsProductOrder() {
-        when(productService.getProductById(anyLong())).thenReturn(product);
+        when(productService.getProductById(anyLong())).thenReturn(java.util.Optional.ofNullable(product));
 
         ProductOrder actualOutput = productOrderService.convertProductOrderDTOToProductOrder(nonEmptyProductOrderDTO);
 

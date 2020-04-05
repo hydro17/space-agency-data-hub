@@ -178,9 +178,9 @@ class ProductControllerTest {
     }
 
     @Test
-    void getProductById_whenValidInput_thenReturns200AndMission() throws Exception {
+    void getProductById_whenValidInput_thenReturns200AndProduct() throws Exception {
 
-        when(productService.getProductById(any(Long.class))).thenReturn(product1);
+        when(productService.getProductById(any(Long.class))).thenReturn(Optional.ofNullable(product1));
 
         MvcResult mvcResult = mockMvc.perform(get("/api/products/{id}", 1L)
                 .contentType("application/json"))
@@ -197,7 +197,7 @@ class ProductControllerTest {
     void getProductById_whenIdOfNonExistingProduct_thenReturns404AndErrorResponse() throws Exception {
 
         long productId = 1L;
-        when(productService.getProductById(any(Long.class))).thenReturn(null);
+        when(productService.getProductById(anyLong())).thenReturn(Optional.empty());
 
         MvcResult mvcResult = mockMvc.perform(get("/api/products/{id}", productId)
                 .contentType("application/json"))
@@ -504,7 +504,7 @@ class ProductControllerTest {
     void deleteProductById_whenValidInput_thenReturns204() throws Exception {
 
         long productId = 1L;
-        when(productService.getProductById(any(Long.class))).thenReturn(product1);
+        when(productService.getProductById(any(Long.class))).thenReturn(Optional.ofNullable(product1));
         when(productOrderService.isOrderedProductById(productId)).thenReturn(false);
 
         mockMvc.perform(delete("/api/products/{id}", productId))
@@ -515,7 +515,7 @@ class ProductControllerTest {
     void deleteProductById_whenProductDoesNotExist_thenReturns404AndErrorResponse() throws Exception {
 
         long productId = 1L;
-        when(productService.getProductById(any(Long.class))).thenReturn(null);
+        when(productService.getProductById(any(Long.class))).thenReturn(Optional.empty());
 
         MvcResult mvcResult = mockMvc.perform(delete("/api/products/{id}", productId))
                 .andExpect(status().isNotFound())
@@ -535,7 +535,7 @@ class ProductControllerTest {
     void deleteProductById_whenProductIsOrdered_thenReturns400AndErrorResponse() throws Exception {
 
         long productId = 1L;
-        when(productService.getProductById(any(Long.class))).thenReturn(product1);
+        when(productService.getProductById(any(Long.class))).thenReturn(Optional.ofNullable(product1));
         when(productOrderService.isOrderedProductById(productId)).thenReturn(true);
 
         MvcResult mvcResult = mockMvc.perform(delete("/api/products/{id}", productId))

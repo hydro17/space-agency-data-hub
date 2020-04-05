@@ -55,14 +55,12 @@ public class ProductController {
                 .collect(Collectors.toList());
     }
 
-    //TODO refactor null -> optional
     @GetMapping("/{id}")
     public ProductDTO getProductById(@PathVariable long id) {
-        Product product = productService.getProductById(id);
 
-        if (product == null) {
-            throw new ProductNotFoundException("There is no product with id: " + id);
-        }
+        Product product = productService.getProductById(id).orElseThrow(
+                () -> new ProductNotFoundException("There is no product with id: " + id)
+        );
 
         return conversionService.convert(product, ProductDTO.class) ;
     }
@@ -139,7 +137,7 @@ public class ProductController {
     @DeleteMapping("/{id}")
     public void deleteProductById(@PathVariable long id) {
 
-        if (productService.getProductById(id) == null) {
+        if (!productService.getProductById(id).isPresent()) {
             throw new ProductNotFoundException("There is no product with id:" + id);
         }
 

@@ -45,11 +45,9 @@ public class ProductOrderService {
         productOrder.setPlacedOn(LocalDateTime.now());
 
         productOrderDTO.getProductIds().forEach(productId -> {
-            Product product = productService.getProductById(productId);
-
-            if (product == null) {
-                throw new ProductNotFoundException("There is no product with id: " + productId);
-            }
+            Product product = productService.getProductById(productId).orElseThrow(
+                    ()-> new ProductNotFoundException("There is no product with id: " + productId)
+            );
 
             productOrder.addProduct(product);
         });

@@ -103,21 +103,21 @@ class ProductServiceTest {
     }
 
     @Test
-    void getProductById_whenValidInput_thenReturnsProduct() {
+    void getProductById_whenValidInput_thenReturnsOptionalProduct() {
         when(productRepository.findById(anyLong())).thenReturn(Optional.ofNullable(product));
 
-        Product actualOutput = productService.getProductById(anyLong());
+        Optional<Product> actualOutput = productService.getProductById(anyLong());
 
-        assertThat(actualOutput).isEqualTo(product);
+        assertThat(actualOutput).isEqualTo(Optional.ofNullable(product));
     }
 
     @Test
-    void getProductById_whenIdOfNonExistentProduct_thenReturnsNull() {
+    void getProductById_whenIdOfNonExistentProduct_thenReturns404AndErrorResponse() {
         when(productRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        Product actualOutput = productService.getProductById(anyLong());
+        Optional<Product> actualOutput = productService.getProductById(anyLong());
 
-        assertThat(actualOutput).isNull();
+        assertThat(actualOutput).isEqualTo(Optional.empty());
     }
 
     @Test
