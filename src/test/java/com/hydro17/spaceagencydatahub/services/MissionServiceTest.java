@@ -197,18 +197,14 @@ class MissionServiceTest {
 
         Mission actualOutput = missionService.updateMission(changedMission);
 
-        assertThat(actualOutput.getId()).isEqualTo(changedMission.getId());
-        assertThat(actualOutput.getName()).isEqualTo(changedMission.getName());
-        assertThat(actualOutput.getStartDate()).isEqualTo(changedMission.getStartDate());
-        assertThat(actualOutput.getFinishDate()).isEqualTo(changedMission.getFinishDate());
-        assertThat(actualOutput.getImageryType()).isEqualTo(changedMission.getImageryType());
+        assertThat(actualOutput).isEqualToComparingFieldByField(changedMission);
     }
 
     // -------------------------------------------------------------------------------
 
     @Test
     void deleteMissionById_whenInputId_thenReturnsVoid() {
-        Long missionId = 1L;
+        long missionId = 1L;
 
         missionService.deleteMissionById(missionId);
 
