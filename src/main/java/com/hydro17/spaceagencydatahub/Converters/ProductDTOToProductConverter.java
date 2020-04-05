@@ -6,13 +6,12 @@ import com.hydro17.spaceagencydatahub.models.Product;
 import com.hydro17.spaceagencydatahub.models.ProductDTO;
 import com.hydro17.spaceagencydatahub.services.MissionService;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.stereotype.Component;
 
-public class ProductDtoToProductConverter implements Converter<ProductDTO, Product> {
+public class ProductDTOToProductConverter implements Converter<ProductDTO, Product> {
 
     private final MissionService missionService;
 
-    public ProductDtoToProductConverter(MissionService missionService) {
+    public ProductDTOToProductConverter(MissionService missionService) {
         this.missionService = missionService;
     }
 
@@ -20,7 +19,7 @@ public class ProductDtoToProductConverter implements Converter<ProductDTO, Produ
     public Product convert(ProductDTO productDTO) {
         Product product = new Product();
 
-        product.setId(0);
+        product.setId(productDTO.getId());
         product.setAcquisitionDate(productDTO.getAcquisitionDate());
         product.setFootprint(productDTO.getFootprint());
         product.setPrice(productDTO.getPrice());

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hydro17.spaceagencydatahub.exceptions.ErrorResponse;
 import com.hydro17.spaceagencydatahub.models.Mission;
 import com.hydro17.spaceagencydatahub.models.Product;
+import com.hydro17.spaceagencydatahub.models.ProductDTO;
 import com.hydro17.spaceagencydatahub.models.ProductFootprint;
 import com.hydro17.spaceagencydatahub.repositories.MissionRepository;
 import com.hydro17.spaceagencydatahub.repositories.ProductOrderRepository;
@@ -24,6 +25,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -54,6 +56,8 @@ public class Product_findProduct_IntegrationTest {
     private List<Product> emptyListOfProducts;
     private List<Product> nonEmptyListOfProducts;
 
+    private ProductDTO productDTOWithIdNotEqualZero;
+
     @BeforeEach
     void setUp() {
         productOrderRepository.deleteAll();
@@ -80,6 +84,17 @@ public class Product_findProduct_IntegrationTest {
         product.setMission(mission);
         mission.addProduct(product);
 
+        productDTOWithIdNotEqualZero = new ProductDTO();
+        productDTOWithIdNotEqualZero.setId(product.getId());
+        productDTOWithIdNotEqualZero.setMissionName(product.getMission().getName());
+        productDTOWithIdNotEqualZero.setAcquisitionDate(product.getAcquisitionDate());
+        productDTOWithIdNotEqualZero.setFootprint(product.getFootprint());
+        productDTOWithIdNotEqualZero.setPrice(product.getPrice());
+        productDTOWithIdNotEqualZero.setUrl(product.getUrl());
+
+//        nonEmptyListOfProductDTOs = new ArrayList<>();
+//        nonEmptyListOfProductDTOs.add(productDTOWithIdNotEqualZero);
+
         emptyListOfProducts = new ArrayList<>();
 
         nonEmptyListOfProducts = new ArrayList<>();
@@ -90,24 +105,27 @@ public class Product_findProduct_IntegrationTest {
 
 //      Because product is not ordered, method findProduct will return URL as null
         product.setUrl(null);
+        productDTOWithIdNotEqualZero.setUrl(null);
     }
 
     @Test
-    void findProduct_whenNoParams_returns200AndListOfAllProducts() throws Exception {
+    void findProduct_whenNoParams_returns200AndListOfAllProductDTOs() throws Exception {
 
         MvcResult mvcResult = mockMvc.perform(get("/api/products/find")
                 .contentType("application/json"))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        String expectedResponseBody = objectMapper.writeValueAsString(nonEmptyListOfProducts);
+        ProductDTO expectedOutput = productDTOWithIdNotEqualZero;
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
+        ProductDTO actualOutput = Arrays.asList(objectMapper.readValue(actualResponseBody, ProductDTO[].class)).get(0);
 
-        assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
+        assertThat(actualOutput).isEqualToIgnoringGivenFields(expectedOutput, "id", "footprint");
+        assertThat(actualOutput.getFootprint()).isEqualToIgnoringGivenFields(expectedOutput.getFootprint(), "id");
     }
 
     @Test
-    void findProduct_whenValidMissionName_returns200AndFilteredListOfProducts() throws Exception {
+    void findProduct_whenValidMissionName_returns200AndFilteredListOfProductDTOs() throws Exception {
 
         String missionName = "mission1";
 
@@ -117,14 +135,16 @@ public class Product_findProduct_IntegrationTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        String expectedResponseBody = objectMapper.writeValueAsString(nonEmptyListOfProducts);
+        ProductDTO expectedOutput = productDTOWithIdNotEqualZero;
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
+        ProductDTO actualOutput = Arrays.asList(objectMapper.readValue(actualResponseBody, ProductDTO[].class)).get(0);
 
-        assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
+        assertThat(actualOutput).isEqualToIgnoringGivenFields(expectedOutput, "id", "footprint");
+        assertThat(actualOutput.getFootprint()).isEqualToIgnoringGivenFields(expectedOutput.getFootprint(), "id");
     }
 
     @Test
-    void findProduct_whenNonExistingMissionName_returns200AndEmptyListOfProducts() throws Exception {
+    void findProduct_whenNonExistingMissionName_returns200AndEmptyListOfProductDTOs() throws Exception {
 
         String missionName = "mission2";
 
@@ -134,14 +154,14 @@ public class Product_findProduct_IntegrationTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        String expectedResponseBody = objectMapper.writeValueAsString(emptyListOfProducts);
+        String expectedResponseBody = objectMapper.writeValueAsString(new ArrayList<ProductDTO>());
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
 
         assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
     }
 
     @Test
-    void findProduct_whenValidAfterDate_returns200AndFilteredListOfProducts() throws Exception {
+    void findProduct_whenValidAfterDate_returns200AndFilteredListOfProductDTOs() throws Exception {
 
         LocalDateTime afterDate = LocalDateTime.now().minusHours(1L);
 
@@ -151,14 +171,16 @@ public class Product_findProduct_IntegrationTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        String expectedResponseBody = objectMapper.writeValueAsString(nonEmptyListOfProducts);
+        ProductDTO expectedOutput = productDTOWithIdNotEqualZero;
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
+        ProductDTO actualOutput = Arrays.asList(objectMapper.readValue(actualResponseBody, ProductDTO[].class)).get(0);
 
-        assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
+        assertThat(actualOutput).isEqualToIgnoringGivenFields(expectedOutput, "id", "footprint");
+        assertThat(actualOutput.getFootprint()).isEqualToIgnoringGivenFields(expectedOutput.getFootprint(), "id");
     }
 
     @Test
-    void findProduct_whenInvalidAfterDate_returns200AndEmptyListOfProducts() throws Exception {
+    void findProduct_whenInvalidAfterDate_returns200AndEmptyListOfProductDTOs() throws Exception {
 
         LocalDateTime afterDate = LocalDateTime.now().plusHours(1L);
 
@@ -168,14 +190,14 @@ public class Product_findProduct_IntegrationTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        String expectedResponseBody = objectMapper.writeValueAsString(emptyListOfProducts);
+        String expectedResponseBody = objectMapper.writeValueAsString(new ArrayList<ProductDTO>());
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
 
         assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
     }
 
     @Test
-    void findProduct_whenValidBeforeDateAndAfterDate_returns200AndFilteredListOfProducts() throws Exception {
+    void findProduct_whenValidBeforeDateAndAfterDate_returns200AndFilteredListOfProductDTOs() throws Exception {
 
         LocalDateTime afterDate = LocalDateTime.now().minusHours(1L);
         LocalDateTime beforeDate = LocalDateTime.now().plusHours(1L);
@@ -187,14 +209,16 @@ public class Product_findProduct_IntegrationTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        String expectedResponseBody = objectMapper.writeValueAsString(nonEmptyListOfProducts);
+        ProductDTO expectedOutput = productDTOWithIdNotEqualZero;
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
+        ProductDTO actualOutput = Arrays.asList(objectMapper.readValue(actualResponseBody, ProductDTO[].class)).get(0);
 
-        assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
+        assertThat(actualOutput).isEqualToIgnoringGivenFields(expectedOutput, "id", "footprint");
+        assertThat(actualOutput.getFootprint()).isEqualToIgnoringGivenFields(expectedOutput.getFootprint(), "id");
     }
 
     @Test
-    void findProduct_whenValidLatitudeAndLongitude_returns200AndFilteredListOfProducts() throws Exception {
+    void findProduct_whenValidLatitudeAndLongitude_returns200AndFilteredListOfProductDTOs() throws Exception {
 
         Double latitude = 150.3;
         Double longitude = 40.7;
@@ -206,14 +230,16 @@ public class Product_findProduct_IntegrationTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        String expectedResponseBody = objectMapper.writeValueAsString(nonEmptyListOfProducts);
+        ProductDTO expectedOutput = productDTOWithIdNotEqualZero;
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
+        ProductDTO actualOutput = Arrays.asList(objectMapper.readValue(actualResponseBody, ProductDTO[].class)).get(0);
 
-        assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
+        assertThat(actualOutput).isEqualToIgnoringGivenFields(expectedOutput, "id", "footprint");
+        assertThat(actualOutput.getFootprint()).isEqualToIgnoringGivenFields(expectedOutput.getFootprint(), "id");
     }
 
     @Test
-    void findProduct_whenInvalidLatitudeOrLongitude_returns200AndEmptyListOfProducts() throws Exception {
+    void findProduct_whenInvalidLatitudeOrLongitude_returns200AndEmptyListOfProductDTOs() throws Exception {
 
         Double latitude = 150.3;
         Double longitude = 200.7;
@@ -225,14 +251,14 @@ public class Product_findProduct_IntegrationTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        String expectedResponseBody = objectMapper.writeValueAsString(emptyListOfProducts);
+        String expectedResponseBody = objectMapper.writeValueAsString(new ArrayList<ProductDTO>());
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
 
         assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
     }
 
     @Test
-    void findProduct_whenValidImageryType_returns200AndFilteredListOfProducts() throws Exception {
+    void findProduct_whenValidImageryType_returns200AndFilteredListOfProductDTOs() throws Exception {
 
         ImageryType imageryType = ImageryType.HYPERSPECTRAL;
 
@@ -242,10 +268,12 @@ public class Product_findProduct_IntegrationTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        String expectedResponseBody = objectMapper.writeValueAsString(nonEmptyListOfProducts);
+        ProductDTO expectedOutput = productDTOWithIdNotEqualZero;
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
+        ProductDTO actualOutput = Arrays.asList(objectMapper.readValue(actualResponseBody, ProductDTO[].class)).get(0);
 
-        assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
+        assertThat(actualOutput).isEqualToIgnoringGivenFields(expectedOutput, "id", "footprint");
+        assertThat(actualOutput.getFootprint()).isEqualToIgnoringGivenFields(expectedOutput.getFootprint(), "id");
     }
 
     @Test
@@ -259,7 +287,7 @@ public class Product_findProduct_IntegrationTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        String expectedResponseBody = objectMapper.writeValueAsString(emptyListOfProducts);
+        String expectedResponseBody = objectMapper.writeValueAsString(new ArrayList<ProductDTO>());
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
 
         assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
@@ -307,9 +335,11 @@ public class Product_findProduct_IntegrationTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        String expectedResponseBody = objectMapper.writeValueAsString(nonEmptyListOfProducts);
+        ProductDTO expectedOutput = productDTOWithIdNotEqualZero;
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
+        ProductDTO actualOutput = Arrays.asList(objectMapper.readValue(actualResponseBody, ProductDTO[].class)).get(0);
 
-        assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
+        assertThat(actualOutput).isEqualToIgnoringGivenFields(expectedOutput, "id", "footprint");
+        assertThat(actualOutput.getFootprint()).isEqualToIgnoringGivenFields(expectedOutput.getFootprint(), "id");
     }
 }

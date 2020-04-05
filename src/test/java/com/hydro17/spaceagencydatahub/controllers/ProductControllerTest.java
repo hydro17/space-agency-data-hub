@@ -3,7 +3,10 @@ package com.hydro17.spaceagencydatahub.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hydro17.spaceagencydatahub.exceptions.ErrorResponse;
 import com.hydro17.spaceagencydatahub.models.*;
-import com.hydro17.spaceagencydatahub.services.*;
+import com.hydro17.spaceagencydatahub.services.MissionService;
+import com.hydro17.spaceagencydatahub.services.OrderItemService;
+import com.hydro17.spaceagencydatahub.services.ProductOrderService;
+import com.hydro17.spaceagencydatahub.services.ProductService;
 import com.hydro17.spaceagencydatahub.utils.ImageryType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,11 +25,12 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = ProductController.class)
@@ -56,20 +60,22 @@ class ProductControllerTest {
     private ProductOrderService productOrderService;
 
     //TODO add unit test conversionService.covert(ProductDto, Product.class)
+    //TODO change conversionService to mocked version
     @Autowired
     ConversionService conversionService;
 
-    // Added due to CommandLineRunner in the class SpaceAgencyDataHubApplication
     @MockBean
     private MissionService missionService;
 
     private List<Product> emptyListOfProducts;
     private List<Product> nonEmptyListOfProducts;
+    private List<ProductDTO> nonEmptyListOfProductDTOs;
     private List<IProductAndOrderCount> emptyListOfProductAndOrderCounts;
     private List<IProductAndOrderCount> notEmptyListOfProductAndOrderCounts;
 
     private Product product1;
     private ProductDTO productDTO;
+    private ProductDTO productDTOWithIdNotEqualZero;
     private Mission mission;
 
     @BeforeEach
@@ -87,6 +93,7 @@ class ProductControllerTest {
         footprint.setEndCoordinateLongitude(50.7);
 
         product1 = new Product();
+        product1.setId(2L);
         product1.setAcquisitionDate(LocalDateTime.now());
         product1.setFootprint(footprint);
         product1.setPrice(new BigDecimal("10.5"));
@@ -95,20 +102,33 @@ class ProductControllerTest {
         mission.addProduct(product1);
 
         emptyListOfProducts = new ArrayList<>();
-        nonEmptyListOfProducts = new ArrayList<>();
 
+        nonEmptyListOfProducts = new ArrayList<>();
         nonEmptyListOfProducts.add(product1);
 
+        //TODO ? productDTO -> requestProductDTO
         productDTO = new ProductDTO();
-        productDTO.setMissionName(product1.getMissionName());
+        productDTO.setMissionName(product1.getMission().getName());
         productDTO.setAcquisitionDate(product1.getAcquisitionDate());
         productDTO.setFootprint(product1.getFootprint());
         productDTO.setPrice(product1.getPrice());
         productDTO.setUrl(product1.getUrl());
 
-        emptyListOfProductAndOrderCounts = new ArrayList<>();
-        notEmptyListOfProductAndOrderCounts = new ArrayList<>();
+        //TODO ? productDTOWithIdNotEqualZero -> responseProductDTO
+        productDTOWithIdNotEqualZero = new ProductDTO();
+        productDTOWithIdNotEqualZero.setId(product1.getId());
+        productDTOWithIdNotEqualZero.setMissionName(product1.getMission().getName());
+        productDTOWithIdNotEqualZero.setAcquisitionDate(product1.getAcquisitionDate());
+        productDTOWithIdNotEqualZero.setFootprint(product1.getFootprint());
+        productDTOWithIdNotEqualZero.setPrice(product1.getPrice());
+        productDTOWithIdNotEqualZero.setUrl(product1.getUrl());
 
+        nonEmptyListOfProductDTOs = new ArrayList<>();
+        nonEmptyListOfProductDTOs.add(productDTOWithIdNotEqualZero);
+
+        emptyListOfProductAndOrderCounts = new ArrayList<>();
+
+        notEmptyListOfProductAndOrderCounts = new ArrayList<>();
         notEmptyListOfProductAndOrderCounts.add(new ProductAndOrderCount(product1, 1L));
     }
 
@@ -118,13 +138,16 @@ class ProductControllerTest {
     void getAllProducts_whenValidInput_thenReturns200AndNonEmptyListOfProducts() throws Exception {
 
         when(productService.getAllProducts()).thenReturn(nonEmptyListOfProducts);
+        //TODO change conversionService to mocked version
+//        when(conversionService.convert(any(Product.class), same(ProductDTO.class))).thenReturn(productDTOWithIdNotEqualZero);
+//        when(conversionService.convert(any(), eq(ProductDTO.class))).thenReturn(productDTOWithIdNotEqualZero);
 
         MvcResult mvcResult = mockMvc.perform(get("/api/products")
                 .contentType("application/json"))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        String expectedResponseBody = objectMapper.writeValueAsString(nonEmptyListOfProducts);
+        String expectedResponseBody = objectMapper.writeValueAsString(nonEmptyListOfProductDTOs);
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
 
         assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
@@ -164,7 +187,7 @@ class ProductControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        String expectedResponseBody = objectMapper.writeValueAsString(product1);
+        String expectedResponseBody = objectMapper.writeValueAsString(productDTOWithIdNotEqualZero);
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
 
         assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expectedResponseBody);
@@ -195,7 +218,7 @@ class ProductControllerTest {
 
     @WithMockUser(roles = "CUSTOMER")
     @Test
-    void findProduct_whenValidInput_returns200AndNonEmptyListOfProducts() throws Exception {
+    void findProduct_whenValidInput_returns200AndNonEmptyListOfProductDTOs() throws Exception {
 
         String missionName = "mission1";
         LocalDateTime beforeDate = LocalDateTime.now();
@@ -222,7 +245,7 @@ class ProductControllerTest {
         verify(productService, times(1)).getFilteredProducts(eq(missionName), eq(beforeDate),
                 eq(afterDate), eq(latitude), eq(longitude), eq(imageryType));
 
-        String expectedResponseBody = objectMapper.writeValueAsString(nonEmptyListOfProducts);
+        String expectedResponseBody = objectMapper.writeValueAsString(nonEmptyListOfProductDTOs);
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
 
         assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
@@ -230,7 +253,7 @@ class ProductControllerTest {
 
     @WithMockUser(roles = "CUSTOMER")
     @Test
-    void findProduct_whenLowerCaseImageryType_returns200AndNonEmptyListOfProducts() throws Exception {
+    void findProduct_whenLowerCaseImageryType_returns200AndNonEmptyListOfProductDTOs() throws Exception {
 
         String missionName = "mission1";
         LocalDateTime beforeDate = LocalDateTime.now();
@@ -257,7 +280,7 @@ class ProductControllerTest {
         verify(productService, times(1)).getFilteredProducts(eq(missionName), eq(beforeDate),
                 eq(afterDate), eq(latitude), eq(longitude), eq(imageryType));
 
-        String expectedResponseBody = objectMapper.writeValueAsString(nonEmptyListOfProducts);
+        String expectedResponseBody = objectMapper.writeValueAsString(nonEmptyListOfProductDTOs);
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
 
         assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
@@ -318,9 +341,9 @@ class ProductControllerTest {
                 .andReturn();
     }
 
-    // get01 = getProductsGroupedByProductIdOrderedByOrderCountDesc
+    // getProductsGroupedByProductIdOrderedByOrderCountDesc
     @Test
-    void get01_whenValidInput_returns200AndNotEmptyListOfProducts() throws Exception {
+    void getMostOrderedProductsDesc_whenValidInput_returns200AndNotEmptyListOfProductDTOs() throws Exception {
 
         when(orderItemService.getAllProductAndOrderCountGroupedByProductIdOrderedByOrderCountDesc())
                 .thenReturn(notEmptyListOfProductAndOrderCounts);
@@ -332,15 +355,15 @@ class ProductControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        String expectedResponseBody = objectMapper.writeValueAsString(nonEmptyListOfProducts);
+        String expectedResponseBody = objectMapper.writeValueAsString(nonEmptyListOfProductDTOs);
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
 
         assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
     }
 
-    // get01 = getProductsGroupedByProductIdOrderedByOrderCountDesc
+    // getProductsGroupedByProductIdOrderedByOrderCountDesc
     @Test
-    void get01_whenValidInput_returns200AndEmptyListOfProducts() throws Exception {
+    void getMostOrderedProductsDesc_whenValidInput_returns200AndEmptyListOfProducts() throws Exception {
 
         when(orderItemService.getAllProductAndOrderCountGroupedByProductIdOrderedByOrderCountDesc())
                 .thenReturn(emptyListOfProductAndOrderCounts);
@@ -361,10 +384,14 @@ class ProductControllerTest {
     //  ----------------------------------------------------------------------------------------------
 
     @Test
-    void addProduct_whenValidInput_thenReturns200AndMission() throws Exception {
+    void addProduct_whenValidInput_thenReturns200AndProductDTO() throws Exception {
 
-        when(missionService.getMissionByName(any(String.class))).thenReturn(java.util.Optional.ofNullable(mission));
+        when(missionService.getMissionByName(anyString())).thenReturn(Optional.ofNullable(mission));
+
+        //TODO change conversionService to mocked version
         when(productService.saveProduct(conversionService.convert(productDTO, Product.class))).thenReturn(product1);
+//        when(productService.saveProduct(product1)).thenReturn(product1);
+//        when(conversionService.convert(product1, ProductDTO.class)).thenReturn(productDTOWithIdNotEqualZero);
 
         MvcResult mvcResult = mockMvc.perform(post("/api/products")
                 .contentType("application/json")
@@ -372,19 +399,18 @@ class ProductControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        String expectedResponseBody = objectMapper.writeValueAsString(product1);
+        String expectedResponseBody = objectMapper.writeValueAsString(productDTOWithIdNotEqualZero);
         String actualResponseBody =  mvcResult.getResponse().getContentAsString();
 
         assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
     }
 
     @Test
-    void addProduct_whenAcquisitionDateBeforeMissionStartDate_thenReturns200AndMission() throws Exception {
+    void addProduct_whenAcquisitionDateBeforeMissionStartDate_thenReturns400AndErrorResponse() throws Exception {
 
         productDTO.setAcquisitionDate(mission.getStartDate().minusHours(1L));
 
-        when(missionService.getMissionByName(any(String.class))).thenReturn(java.util.Optional.ofNullable(mission));
-        when(productService.saveProduct(conversionService.convert(productDTO, Product.class))).thenReturn(product1);
+        when(missionService.getMissionByName(anyString())).thenReturn(Optional.ofNullable(mission));
 
         MvcResult mvcResult = mockMvc.perform(post("/api/products")
                 .contentType("application/json")
@@ -404,11 +430,12 @@ class ProductControllerTest {
     }
 
     @Test
-    void addProduct_whenAcquisitionDateAfterMissionFinishtDate_thenReturns200AndMission() throws Exception {
+    void addProduct_whenAcquisitionDateAfterMissionFinishtDate_thenReturns400AndErrorResponse() throws Exception {
 
         productDTO.setAcquisitionDate(mission.getFinishDate().plusHours(1L));
 
-        when(missionService.getMissionByName(any(String.class))).thenReturn(java.util.Optional.ofNullable(mission));
+        when(missionService.getMissionByName(anyString())).thenReturn(Optional.ofNullable(mission));
+        //TODO change conversionService to mocked version
         when(productService.saveProduct(conversionService.convert(productDTO, Product.class))).thenReturn(product1);
 
         MvcResult mvcResult = mockMvc.perform(post("/api/products")
@@ -453,7 +480,7 @@ class ProductControllerTest {
     @Test
     void addProduct_whenMissionDoesNotExist_thenReturns404AndErrorResponse() throws Exception {
 
-        when(productService.doesMissionExist(any(String.class))).thenReturn(false);
+        when(missionService.getMissionByName(anyString())).thenReturn(Optional.empty());
 
         MvcResult mvcResult = mockMvc.perform(post("/api/products")
                 .contentType("application/json")

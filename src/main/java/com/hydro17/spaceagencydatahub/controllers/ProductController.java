@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/products")
@@ -40,24 +42,32 @@ public class ProductController {
     }
 
     @GetMapping
-    public List<Product> getAllProducts() {
-        return productService.getAllProducts();
+    public List<ProductDTO> getAllProducts() {
+        List<Product> products = productService.getAllProducts();
+
+//        TODO remove after testing @MockBean conversionService
+//        Long aa = conversionService.convert("10", Long.class);
+//        products.get(0).setId(aa);
+
+        return products.stream()
+                .map(product -> conversionService.convert(product, ProductDTO.class))
+                .collect(Collectors.toList());
     }
 
     //TODO refactor null -> optional
     @GetMapping("/{id}")
-    public Product getProductById(@PathVariable long id) {
+    public ProductDTO getProductById(@PathVariable long id) {
         Product product = productService.getProductById(id);
 
         if (product == null) {
             throw new ProductNotFoundException("There is no product with id: " + id);
         }
 
-        return product;
+        return conversionService.convert(product, ProductDTO.class) ;
     }
 
     @GetMapping("/find")
-    public List<Product> findProduct(
+    public List<ProductDTO> findProduct(
             @RequestParam(required = false) String missionName,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime beforeDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime afterDate,
@@ -77,20 +87,29 @@ public class ProductController {
 
         List<Product> products = productService.getFilteredProducts(missionName, beforeDate, afterDate, latitude,
                 longitude, imageryType);
-        return productService.removeUrlOfUnorderedProducts(products);
+        List<Product> listOfProductsWithUrlNullForUnordered = productService.removeUrlOfUnorderedProducts(products);
+
+        return listOfProductsWithUrlNullForUnordered.stream()
+                .map(product -> conversionService.convert(product, ProductDTO.class))
+                .collect(Collectors.toList());
     }
 
+//    getProductsGroupedByProductIdOrderedByOrderCountDesc
     @GetMapping("/most-ordered")
-    public List<Product> getProductsGroupedByProductIdOrderedByOrderCountDesc() {
+    public List<ProductDTO> getMostOrderedProductsDesc() {
         List<IProductAndOrderCount> productAndProductOrderCounts =
                 orderItemService.getAllProductAndOrderCountGroupedByProductIdOrderedByOrderCountDesc();
 
         List<Product> products = orderItemService.convertAllProductAndOrderCountToProduct(productAndProductOrderCounts);
-        return products;
+
+        return products.stream()
+                .map(product -> conversionService.convert(product, ProductDTO.class))
+                .collect(Collectors.toList());
     }
 
+// TODO response HttpStatus.Created
     @PostMapping
-    public Product addProduct(@Valid @RequestBody ProductDTO productDTO, BindingResult bindingResult) {
+    public ProductDTO addProduct(@Valid @RequestBody ProductDTO productDTO, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             throw new ProductNullFieldException("No product field can be null");
@@ -110,8 +129,9 @@ public class ProductController {
                     + " is after mission start date " + mission.getStartDate());
         }
 
+        productDTO.setId(0);
         Product productWithSetId = productService.saveProduct(conversionService.convert(productDTO, Product.class));
-        return productWithSetId;
+        return conversionService.convert(productWithSetId, ProductDTO.class);
     }
 
     @DeleteMapping("/{id}")

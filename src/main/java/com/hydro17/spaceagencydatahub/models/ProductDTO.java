@@ -11,6 +11,9 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class ProductDTO {
+
+    private long id;
+
     @NotNull
     private String missionName;
 

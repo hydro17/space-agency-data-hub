@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,11 +53,13 @@ public class Product_IntegrationTest {
 
     private List<Product> emptyListOfProducts;
     private List<Product> nonEmptyListOfProducts;
+    private List<ProductDTO> nonEmptyListOfProductDTOs;
 
-    Product product;
-    ProductDTO productDTO;
-    Mission mission;
-    ProductOrder productOrder;
+    private Product product;
+    private ProductDTO productDTO;
+    private ProductDTO productDTOWithIdNotEqualZero;
+    private Mission mission;
+    private ProductOrder productOrder;
 
     @BeforeEach
     void setUp() {
@@ -85,15 +88,26 @@ public class Product_IntegrationTest {
         mission.addProduct(product);
 
         productDTO = new ProductDTO();
-        productDTO.setMissionName(product.getMissionName());
+        productDTO.setMissionName(product.getMission().getName());
         productDTO.setAcquisitionDate(product.getAcquisitionDate());
         productDTO.setFootprint(product.getFootprint());
         productDTO.setPrice(product.getPrice());
         productDTO.setUrl(product.getUrl());
 
-        emptyListOfProducts = new ArrayList<>();
-        nonEmptyListOfProducts = new ArrayList<>();
+        productDTOWithIdNotEqualZero = new ProductDTO();
+        productDTOWithIdNotEqualZero.setId(product.getId());
+        productDTOWithIdNotEqualZero.setMissionName(product.getMission().getName());
+        productDTOWithIdNotEqualZero.setAcquisitionDate(product.getAcquisitionDate());
+        productDTOWithIdNotEqualZero.setFootprint(product.getFootprint());
+        productDTOWithIdNotEqualZero.setPrice(product.getPrice());
+        productDTOWithIdNotEqualZero.setUrl(product.getUrl());
 
+        nonEmptyListOfProductDTOs = new ArrayList<>();
+        nonEmptyListOfProductDTOs.add(productDTOWithIdNotEqualZero);
+
+        emptyListOfProducts = new ArrayList<>();
+
+        nonEmptyListOfProducts = new ArrayList<>();
         nonEmptyListOfProducts.add(product);
 
         productOrder = new ProductOrder();
@@ -104,7 +118,7 @@ public class Product_IntegrationTest {
     //  ----------------------------------------------------------------------------------------------
 
     @Test
-    void getAllProducts_whenValidInput_thenReturns200AndNonEmptyListOfProducts() throws Exception {
+    void getAllProducts_whenValidInput_thenReturns200AndNonEmptyListOfProductDTOs() throws Exception {
 
         // mission must be added to DB before adding to DB product belonging to this mission
         missionRepository.save(mission);
@@ -115,10 +129,12 @@ public class Product_IntegrationTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        String expectedResponseBody = objectMapper.writeValueAsString(nonEmptyListOfProducts);
+        ProductDTO expectedOutput = nonEmptyListOfProductDTOs.get(0);
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
+        ProductDTO actualOutput = Arrays.asList(objectMapper.readValue(actualResponseBody, ProductDTO[].class)).get(0);
 
-        assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
+        assertThat(actualOutput).isEqualToIgnoringGivenFields(expectedOutput, "id", "footprint");
+        assertThat(actualOutput.getFootprint()).isEqualToIgnoringGivenFields(expectedOutput.getFootprint(), "id");
     }
 
     @Test
@@ -145,7 +161,7 @@ public class Product_IntegrationTest {
     }
 
     @Test
-    void getProductById_whenValidInput_thenReturns200AndMission() throws Exception {
+    void getProductById_whenValidInput_thenReturns200AndProductDTO() throws Exception {
 
         // mission must be added to DB before adding to DB product belonging to this mission
         missionRepository.save(mission);
@@ -156,10 +172,12 @@ public class Product_IntegrationTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        String expectedResponseBody = objectMapper.writeValueAsString(product);
+        ProductDTO expectedOutput = productDTOWithIdNotEqualZero;
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
+        ProductDTO actualOutput = objectMapper.readValue(actualResponseBody, ProductDTO.class);
 
-        assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
+        assertThat(actualOutput).isEqualToIgnoringGivenFields(expectedOutput, "id", "footprint");
+        assertThat(actualOutput.getFootprint()).isEqualToIgnoringGivenFields(expectedOutput.getFootprint(), "id");
     }
 
     @Test
@@ -187,9 +205,9 @@ public class Product_IntegrationTest {
 
     //  ----------------------------------------------------------------------------------------------
 
-    // get01 = getProductsGroupedByProductIdOrderedByOrderCountDesc
+    //getProductsGroupedByProductIdOrderedByOrderCountDesc
     @Test
-    void get01_whenValidInput_returns200AndNotEmptyListOfProducts() throws Exception {
+    void getMostOrderedProductsDesc_whenValidInput_returns200AndNotEmptyListOfProductDTOs() throws Exception {
 
         // mission must be added to DB before adding to DB product belonging to this mission
         missionRepository.save(mission);
@@ -202,15 +220,17 @@ public class Product_IntegrationTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        String expectedResponseBody = objectMapper.writeValueAsString(nonEmptyListOfProducts);
+        ProductDTO expectedOutput = nonEmptyListOfProductDTOs.get(0);
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
+        ProductDTO actualOutput = Arrays.asList(objectMapper.readValue(actualResponseBody, ProductDTO[].class)).get(0);
 
-        assertThat(actualResponseBody).isEqualTo(expectedResponseBody);
+        assertThat(actualOutput).isEqualToIgnoringGivenFields(expectedOutput, "id", "footprint");
+        assertThat(actualOutput.getFootprint()).isEqualToIgnoringGivenFields(expectedOutput.getFootprint(), "id");
     }
 
-    // get01 = getProductsGroupedByProductIdOrderedByOrderCountDesc
+    //getProductsGroupedByProductIdOrderedByOrderCountDesc
     @Test
-    void get01_whenValidInput_returns200AndEmptyListOfProducts() throws Exception {
+    void getMostOrderedProductsDesc_whenValidInput_returns200AndEmptyListOfProducts() throws Exception {
 
         MvcResult mvcResult = mockMvc.perform(get("/api/products/most-ordered")
                 .contentType("application/json"))
@@ -242,6 +262,8 @@ public class Product_IntegrationTest {
         productDTO.getFootprint().setId(responseAsProduct.getFootprint().getId());
 
         assertThat(responseAsProduct).isEqualToIgnoringGivenFields(productDTO, "id", "mission");
+        assertThat(productDTO.getId()).isZero();
+        assertThat(responseAsProduct.getId()).isNotZero();
     }
 
     @Test
