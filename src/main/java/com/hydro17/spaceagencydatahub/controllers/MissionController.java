@@ -6,6 +6,7 @@ import com.hydro17.spaceagencydatahub.exceptions.MissionNullFieldException;
 import com.hydro17.spaceagencydatahub.exceptions.MissionProductExistsException;
 import com.hydro17.spaceagencydatahub.models.Mission;
 import com.hydro17.spaceagencydatahub.services.MissionService;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,6 +35,7 @@ public class MissionController {
         return missionOptional.orElseThrow(() -> new MissionNotFoundException("There is no mission with id: " + id));
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public Mission addMission(@Valid @RequestBody Mission mission, BindingResult bindingResult) {
 
@@ -70,6 +72,7 @@ public class MissionController {
         return updatedMission;
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
     public void deleteMissionById(@PathVariable long id) {
         Mission mission = missionService.getMissionById(id)

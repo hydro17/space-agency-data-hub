@@ -104,7 +104,7 @@ class ProductOrderControllerTest {
     }
 
     @Test
-    void addOrder_whenValidInput_thenReturns200AndProductOrder() throws Exception {
+    void addOrder_whenValidInput_thenReturns201AndProductOrder() throws Exception {
 
         when(productOrderService.convertProductOrderDTOToProductOrder(nonEmptyProductOrderDTO)).thenReturn(productOrder);
         when(productOrderService.saveProductOrder(productOrder)).thenReturn(productOrder);
@@ -112,7 +112,7 @@ class ProductOrderControllerTest {
         MvcResult mvcResult = mockMvc.perform(post("/api/orders")
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(nonEmptyProductOrderDTO)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andReturn();
 
         String expectedResponseBody = objectMapper.writeValueAsString(productOrder);

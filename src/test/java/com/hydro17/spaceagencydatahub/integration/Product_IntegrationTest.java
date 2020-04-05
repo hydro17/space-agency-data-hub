@@ -246,14 +246,14 @@ public class Product_IntegrationTest {
     //  ----------------------------------------------------------------------------------------------
 
     @Test
-    void addProduct_whenValidInput_thenReturns200AndMission() throws Exception {
+    void addProduct_whenValidInput_thenReturns201AndMission() throws Exception {
 
         missionRepository.save(mission);
 
         MvcResult mvcResult = mockMvc.perform(post("/api/products")
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(productDTO)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andReturn();
 
         String actualResponseBody =  mvcResult.getResponse().getContentAsString();
@@ -312,14 +312,14 @@ public class Product_IntegrationTest {
 //  ----------------------------------------------------------------------------------------------
 
     @Test
-    void deleteProductById_whenValidInput_thenReturns200() throws Exception {
+    void deleteProductById_whenValidInput_thenReturns204() throws Exception {
 
         missionRepository.save(mission);
         Product savedProduct = productRepository.save(product);
         long productId = savedProduct.getId();
 
         mockMvc.perform(delete("/api/products/{id}", productId))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
     }
 
     @Test

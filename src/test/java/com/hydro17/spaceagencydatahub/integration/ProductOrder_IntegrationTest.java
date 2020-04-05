@@ -124,7 +124,7 @@ public class ProductOrder_IntegrationTest {
     }
 
     @Test
-    void addOrder_whenValidInput_thenReturns200() throws Exception {
+    void addOrder_whenValidInput_thenReturns201() throws Exception {
 
         missionRepository.save(mission);
         Product savedProduct = productRepository.save(product);
@@ -136,7 +136,7 @@ public class ProductOrder_IntegrationTest {
         MvcResult mvcResult = mockMvc.perform(post("/api/orders")
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(nonEmptyProductOrderDTO)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andReturn();
     }
 

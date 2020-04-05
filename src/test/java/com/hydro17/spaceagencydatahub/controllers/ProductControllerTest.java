@@ -384,7 +384,7 @@ class ProductControllerTest {
     //  ----------------------------------------------------------------------------------------------
 
     @Test
-    void addProduct_whenValidInput_thenReturns200AndProductDTO() throws Exception {
+    void addProduct_whenValidInput_thenReturns201AndProductDTO() throws Exception {
 
         when(missionService.getMissionByName(anyString())).thenReturn(Optional.ofNullable(mission));
 
@@ -396,7 +396,7 @@ class ProductControllerTest {
         MvcResult mvcResult = mockMvc.perform(post("/api/products")
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(productDTO)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andReturn();
 
         String expectedResponseBody = objectMapper.writeValueAsString(productDTOWithIdNotEqualZero);
@@ -501,14 +501,14 @@ class ProductControllerTest {
     //  ----------------------------------------------------------------------------------------------
 
     @Test
-    void deleteProductById_whenValidInput_thenReturns200() throws Exception {
+    void deleteProductById_whenValidInput_thenReturns204() throws Exception {
 
         long productId = 1L;
         when(productService.getProductById(any(Long.class))).thenReturn(product1);
         when(productOrderService.isOrderedProductById(productId)).thenReturn(false);
 
         mockMvc.perform(delete("/api/products/{id}", productId))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
     }
 
     @Test

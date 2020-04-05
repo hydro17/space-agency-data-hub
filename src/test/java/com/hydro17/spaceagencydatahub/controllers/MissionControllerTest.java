@@ -184,7 +184,7 @@ class MissionControllerTest {
 //  -----------------------------------------------------------------------------------------------
 
     @Test
-    void addMission_whenValidInput_thenReturns200AndMission() throws Exception {
+    void addMission_whenValidInput_thenReturns201AndMission() throws Exception {
 
         when(missionService.saveMission(any(Mission.class))).thenReturn(mission);
         when(missionService.isMissionNameUnique(any(String.class))).thenReturn(true);
@@ -192,7 +192,7 @@ class MissionControllerTest {
         MvcResult mvcResult = mockMvc.perform(post("/api/missions")
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(mission)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andReturn();
 
         String expectedResponseBody = objectMapper.writeValueAsString(mission);
@@ -333,12 +333,12 @@ class MissionControllerTest {
 
 //  -----------------------------------------------------------------------------------------------
     @Test
-    void deleteMissionById_whenIdOfMissionWithoutProducts_thenReturns200() throws Exception {
+    void deleteMissionById_whenIdOfMissionWithoutProducts_thenReturns204() throws Exception {
 
         when(missionService.getMissionById(any(Long.class))).thenReturn(Optional.ofNullable(mission));
 
         mockMvc.perform(delete("/api/missions/{id}", 1L))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
     }
 
     @Test

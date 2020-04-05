@@ -12,6 +12,7 @@ import com.hydro17.spaceagencydatahub.services.ProductService;
 import com.hydro17.spaceagencydatahub.utils.ImageryType;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -107,7 +108,7 @@ public class ProductController {
                 .collect(Collectors.toList());
     }
 
-// TODO response HttpStatus.Created
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public ProductDTO addProduct(@Valid @RequestBody ProductDTO productDTO, BindingResult bindingResult) {
 
@@ -134,6 +135,7 @@ public class ProductController {
         return conversionService.convert(productWithSetId, ProductDTO.class);
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
     public void deleteProductById(@PathVariable long id) {
 

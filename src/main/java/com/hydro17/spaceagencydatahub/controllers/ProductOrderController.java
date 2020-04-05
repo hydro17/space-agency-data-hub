@@ -3,6 +3,7 @@ package com.hydro17.spaceagencydatahub.controllers;
 import com.hydro17.spaceagencydatahub.exceptions.ProductOrderNoOrderItemsException;
 import com.hydro17.spaceagencydatahub.models.*;
 import com.hydro17.spaceagencydatahub.services.ProductOrderService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +24,7 @@ public class ProductOrderController {
         return productOrders;
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public ProductOrder addOrder(@RequestBody ProductOrderDTO productOrderDTO) {
 

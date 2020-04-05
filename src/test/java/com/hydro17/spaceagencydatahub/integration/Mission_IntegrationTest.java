@@ -171,12 +171,12 @@ public class Mission_IntegrationTest {
     //  -----------------------------------------------------------------------------------------------
 
     @Test
-    void addMission_whenValidInput_thenReturns200AndMission() throws Exception {
+    void addMission_whenValidInput_thenReturns201AndMission() throws Exception {
 
         MvcResult mvcResult = mockMvc.perform(post("/api/missions")
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(mission)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andReturn();
 
         String actualResponseBody =  mvcResult.getResponse().getContentAsString();
@@ -324,12 +324,12 @@ public class Mission_IntegrationTest {
 
     //  -----------------------------------------------------------------------------------------------
     @Test
-    void deleteMissionById_whenIdOfMissionWithoutProducts_thenReturns200() throws Exception {
+    void deleteMissionById_whenIdOfMissionWithoutProducts_thenReturns204() throws Exception {
 
         Mission savedMission = missionRepository.save(mission);
 
         mockMvc.perform(delete("/api/missions/{id}", savedMission.getId()))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
     }
 
     @Test
